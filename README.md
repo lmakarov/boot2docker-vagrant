@@ -5,7 +5,7 @@ Vagrant and boot2docker with NFS mounts support for better performance on OSX.
 Copy the Vagrantfile in this repo into your < Projects > (shared boo2docker VM) or < Project > (dedicated boot2docker VM) directory.
 
     $ vagrant up
-    $ export DOCKER_HOST=tcp://localhost:2375`
+    $ export DOCKER_HOST=tcp://localhost:2375
     $ docker version
 
 ## What is this?
