@@ -39,4 +39,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     EOT
   end
 
+  # Make fig available inside boot2docker via a fig container.
+  # ToDo: For this to work need to use `vagrant reload --provision` whenever restarting the VM.
+  config.vm.provision :shell do |s|
+    s.inline = <<-EOT
+      echo 'alias fig='"'"'docker run --rm -it -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -e FIG_PROJECT_NAME=$(basename $(pwd)) -w="$(pwd)" dduportal/fig'"'" >> /home/docker/.ashrc
+    EOT
+  end
+
 end
