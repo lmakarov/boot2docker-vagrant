@@ -10,11 +10,23 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.network "private_network", ip: "192.168.33.10"
 
-  # Mount current dir under same path in VM
-  config.vm.synced_folder ".", Dir.pwd, type: "nfs", mount_options: ["nolock", "vers=3", "udp"]
-
   # Uncomment below to use more than one instance at once
   #config.vm.network :forwarded_port, guest: 2375, host: 2375, auto_correct: true
+
+  # Synced folder setup
+  if Vagrant::Util::Platform.windows?
+    # Default/Windows mount (vboxfs)
+    config.vm.synced_folder ".", "/vagrant"
+    # Uncomment for better performance on Windows (mount via SMB).
+    # Requires Vagrant to be run with admin privileges.
+    # Will also prompt for the Windows username and password to access the share.
+    #config.vm.synced_folder ".", "/vagrant", type: "smb"
+  else
+    # Mount current dir under the same path in the VM.
+    # Required for fig client to work from the host.
+    # NFS mount works much-much faster on OSX compared to the default vboxfs.
+    config.vm.synced_folder ".", Dir.pwd, type: "nfs", mount_options: ["nolock", "vers=3", "udp"]
+  end
   
   config.vm.provider :virtualbox do |v|
     v.cpus = 1  # VirtualBox works much better with a single CPU.
