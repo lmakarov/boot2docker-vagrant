@@ -26,10 +26,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Will also prompt for the Windows username and password to access the share.
     #config.vm.synced_folder ".", "/vagrant", type: "smb"
   else
-    # Mount current dir under the same path in the VM.
+    # Mount Vagrantfile directory (<Project_XYZ> or a shared <Projects> folder) under the same path in the VM.
     # Required for fig client to work from the host.
     # NFS mount works much-much faster on OSX compared to the default vboxfs.
-    config.vm.synced_folder ".", Dir.pwd, type: "nfs", mount_options: ["nolock", "vers=3", "udp"]
+    vagrant_root = File.dirname(__FILE__)
+    config.vm.synced_folder vagrant_root, vagrant_root, type: "nfs", mount_options: ["nolock", "vers=3", "udp"]
+    # This uses uid and gid of the user that started vagrant.
+    # config.nfs.map_uid = Process.uid
+    # config.nfs.map_gid = Process.gid
   end
   
   config.vm.provider :virtualbox do |v|
