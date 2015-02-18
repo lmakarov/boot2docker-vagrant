@@ -8,7 +8,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "yungsang/boot2docker"
   config.vm.box_check_update = false
 
+  # Map several IP addresses to use with multiple projects
+  # Project specific IP:port mapping for containers is done in fig (fig.yml)
   config.vm.network "private_network", ip: "192.168.33.10"
+  config.vm.network "private_network", ip: "192.168.33.11"
+  config.vm.network "private_network", ip: "192.168.33.12"
 
   # Uncomment below to use more than one instance at once
   #config.vm.network :forwarded_port, guest: 2375, host: 2375, auto_correct: true
