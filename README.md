@@ -13,6 +13,12 @@ Copy the Vagrantfile in this repo into your < Projects > (shared boo2docker VM) 
     $ export DOCKER_HOST=tcp://localhost:2375
     $ docker version
 
+### One-liner for the lazy Mac people (OSX only!)
+
+This installs the following prerequisites and dependencies: brew, cask, virtualbox, vagrant, docker
+
+    curl https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/setup.sh | bash
+
 ## What is this?
 This is a temporary solution to get a better performance with docker data volumes mounted from your OSX host.  
 Boot2docker currently mounts host volumes via the default VirtualBox Guest Additions (vboxfs) mode, which is terribly slow on OSX. Much better performance can be achieved with NFS.
