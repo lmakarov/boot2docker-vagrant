@@ -58,3 +58,12 @@ Otherwise `$(boot2docker shellinit)` will overwrite the variables and set `DOCKE
 
 Vagrant can be controlled (e.g. `vagrant up`, `vagrant ssh`, `vagrant reload`, etc.) from the root directory of the Vagrantfile as well as from any subdirectory. This is very usefull when working with multiple projects in subdirectories.
 
+### Sublime Text 3 users
+
+Add this to your user settings (Sublime Text > Preferences > Settings - User):
+
+    {
+        "atomic_save": false
+    }
+
+ST3 does not update the ctime extended file attribute when saving a file. This leads to NFS not seeing the changes in a file unless the file size changes as well (i.e. changing a sinlge symbol in a file with ST3 will not be visible over NFS). The setting above fixes that.
