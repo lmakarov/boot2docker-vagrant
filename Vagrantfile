@@ -1,11 +1,9 @@
-VAGRANTFILE_API_VERSION = "2"
-
 Vagrant.require_version ">= 1.6.3"
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+Vagrant.configure("2") do |config|
   config.vm.define "boot2docker"
 
-  config.vm.box = "yungsang/boot2docker"
+  config.vm.box = "dduportal/boot2docker"
   config.vm.box_check_update = false
 
   # Map several IP addresses to use with multiple projects
@@ -13,9 +11,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "private_network", ip: "192.168.33.10"
   config.vm.network "private_network", ip: "192.168.33.11"
   config.vm.network "private_network", ip: "192.168.33.12"
-
-  # Uncomment below to use more than one Vagrant/boo2docker instance at once
-  #config.vm.network :forwarded_port, guest: 2375, host: 2375, auto_correct: true
 
   # Synced folder setup
   if Vagrant::Util::Platform.windows?
@@ -29,33 +24,28 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Mount Vagrantfile directory (<Project_XYZ> or a shared <Projects> folder) under the same path in the VM.
     # Required for fig client to work from the host.
     # NFS mount works much-much faster on OSX compared to the default vboxfs.
+    # See https://github.com/mitchellh/vagrant/issues/2304 for why NFS over TCP may be better than over UDP.
     vagrant_root = File.dirname(__FILE__)
     config.vm.synced_folder vagrant_root, vagrant_root, type: "nfs", mount_options: ["nolock", "vers=3", "udp"]
+    #config.vm.synced_folder vagrant_root, vagrant_root, type: "nfs", mount_options: ["nolock", "vers=3", "tcp"]
+    
     # This uses uid and gid of the user that started vagrant.
-    # config.nfs.map_uid = Process.uid
-    # config.nfs.map_gid = Process.gid
+    #config.nfs.map_uid = Process.uid
+    #config.nfs.map_gid = Process.gid
   end
   
+  # CPU and memory settings
   config.vm.provider "virtualbox" do |v|
     v.cpus = 1  # VirtualBox works much better with a single CPU.
     v.memory = 2048
   end
 
-  # Fix busybox/udhcpc issue
+  # Allow Mac OS X docker client to connect to Docker without TLS auth
+  # https://github.com/deis/deis/issues/2230#issuecomment-72701992
   config.vm.provision "shell" do |s|
     s.inline = <<-SCRIPT
-      if ! grep -qs ^nameserver /etc/resolv.conf; then
-        sudo /sbin/udhcpc
-      fi
-      cat /etc/resolv.conf
-    SCRIPT
-  end
-
-  # Adjust datetime after suspend and resume
-  config.vm.provision "shell" do |s|
-    s.inline = <<-SCRIPT
-      sudo /usr/local/bin/ntpclient -s -h pool.ntp.org
-      date
+      echo 'DOCKER_TLS=no' >> /var/lib/boot2docker/profile
+      /etc/init.d/docker restart
     SCRIPT
   end
 
