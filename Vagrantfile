@@ -50,10 +50,11 @@ Vagrant.configure("2") do |config|
   end
 
   # Make fig available inside boot2docker via a fig container.
-  # https://registry.hub.docker.com/u/dduportal/fig/
+  # https://github.com/docker/compose/issues/598#issuecomment-67762456
   config.vm.provision "shell", run: "always" do |s|
     s.inline = <<-SCRIPT
-      echo 'alias fig='"'"'docker run --rm -it -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -e FIG_PROJECT_NAME=$(basename $(pwd)) -w="$(pwd)" dduportal/fig'"'" >> /home/docker/.ashrc
+      echo 'alias docker-compose='"'"'docker run --rm -it -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -e FIG_PROJECT_NAME=$(basename $(pwd)) -w="$(pwd)" blinkreaction/docker-compose'"'" >> /home/docker/.ashrc
+      echo 'alias fig=docker-compose' >> /home/docker/.ashrc
     SCRIPT
   end
 
