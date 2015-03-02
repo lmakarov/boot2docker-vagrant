@@ -46,7 +46,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell" do |s|
     s.inline = <<-SCRIPT
       echo 'DOCKER_TLS=no' >> /var/lib/boot2docker/profile
-      /etc/init.d/docker restart
+      sudo /etc/init.d/docker restart
     SCRIPT
   end
 
