@@ -6,11 +6,12 @@ Vagrant.configure("2") do |config|
   config.vm.box = "dduportal/boot2docker"
   config.vm.box_check_update = false
 
-  # Map several IP addresses to use with multiple projects
+  # The default box private network IP is 192.168.10.10
+  # Uncomment lines below to map additional IP addresses for use with multiple projects.
   # Project specific IP:port mapping for containers is done in fig (fig.yml)
-  config.vm.network "private_network", ip: "192.168.33.10"
-  config.vm.network "private_network", ip: "192.168.33.11"
-  config.vm.network "private_network", ip: "192.168.33.12"
+  #config.vm.network "private_network", ip: "192.168.10.11"
+  #config.vm.network "private_network", ip: "192.168.10.12"
+  #config.vm.network "private_network", ip: "192.168.10.13"
 
   # Synced folder setup
   if Vagrant::Util::Platform.windows?
