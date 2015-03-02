@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
 
   # The default box private network IP is 192.168.10.10
   # Uncomment lines below to map additional IP addresses for use with multiple projects.
-  # Project specific IP:port mapping for containers is done in fig (fig.yml)
+  # Project specific IP:port mapping for containers is done in via docker-compose (docker-compose.yml)
   #config.vm.network "private_network", ip: "192.168.10.11"
   #config.vm.network "private_network", ip: "192.168.10.12"
   #config.vm.network "private_network", ip: "192.168.10.13"
@@ -23,7 +23,7 @@ Vagrant.configure("2") do |config|
     #config.vm.synced_folder ".", "/vagrant", type: "smb"
   else
     # Mount Vagrantfile directory (<Project_XYZ> or a shared <Projects> folder) under the same path in the VM.
-    # Required for fig client to work from the host.
+    # Required for the docker-compose client to work from the OSX host.
     # NFS mount works much-much faster on OSX compared to the default vboxfs.
     # See https://github.com/mitchellh/vagrant/issues/2304 for why NFS over TCP may be better than over UDP.
     vagrant_root = File.dirname(__FILE__)
@@ -50,7 +50,7 @@ Vagrant.configure("2") do |config|
     SCRIPT
   end
 
-  # Make fig available inside boot2docker via a fig container.
+  # Make docker-compose available inside boot2docker via a container.
   # https://github.com/docker/compose/issues/598#issuecomment-67762456
   config.vm.provision "shell", run: "always" do |s|
     s.inline = <<-SCRIPT
