@@ -27,12 +27,12 @@ Vagrant.configure("2") do |config|
     # NFS mount works much-much faster on OSX compared to the default vboxfs.
     # See https://github.com/mitchellh/vagrant/issues/2304 for why NFS over TCP may be better than over UDP.
     vagrant_root = File.dirname(__FILE__)
-    config.vm.synced_folder vagrant_root, vagrant_root, type: "nfs", mount_options: ["nolock", "vers=3", "udp"]
-    #config.vm.synced_folder vagrant_root, vagrant_root, type: "nfs", mount_options: ["nolock", "vers=3", "tcp"]
+    #config.vm.synced_folder vagrant_root, vagrant_root, type: "nfs", mount_options: ["nolock", "vers=3", "udp"]
+    config.vm.synced_folder vagrant_root, vagrant_root, type: "nfs", mount_options: ["nolock", "vers=3", "tcp"]
     
     # This uses uid and gid of the user that started vagrant.
-    #config.nfs.map_uid = Process.uid
-    #config.nfs.map_gid = Process.gid
+    config.nfs.map_uid = Process.uid
+    config.nfs.map_gid = Process.gid
   end
   
   # CPU and memory settings
