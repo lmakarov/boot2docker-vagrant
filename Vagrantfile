@@ -43,8 +43,12 @@ Vagrant.configure("2") do |config|
 
   # Allow Mac OS X docker client to connect to Docker without TLS auth
   # https://github.com/deis/deis/issues/2230#issuecomment-72701992
-  config.vm.provision "shell", inline: "echo 'DOCKER_TLS=no' > /var/lib/boot2docker/profile"
-  config.vm.provision "shell", inline: "sudo /etc/init.d/docker stop >/dev/null 2>&1 || sudo /etc/init.d/docker start"
+  config.vm.provision "shell" do |s|
+    s.inline = <<-SCRIPT
+      echo 'DOCKER_TLS=no' >> /var/lib/boot2docker/profile
+      sudo /etc/init.d/docker stop >/dev/null 2>&1 || sudo /etc/init.d/docker start
+    SCRIPT
+  end
 
   # Make docker-compose available inside boot2docker via a container.
   # https://github.com/docker/compose/issues/598#issuecomment-67762456
