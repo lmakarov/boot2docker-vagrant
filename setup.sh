@@ -7,8 +7,8 @@ brew install caskroom/cask/brew-cask
 # VirtualBox and Vagrant installation
 brew cask install virtualbox vagrant
 
-# Install docker client
-brew install docker
+# Install docker and docker-compose
+brew install docker docker-compose
 
 # Vagrantfile and boot2docker VM
 curl -O https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/Vagrantfile && vagrant up
@@ -19,3 +19,4 @@ source ~/.bash_profile
 
 # Check that Docker works
 docker version
+docker-compose --version
