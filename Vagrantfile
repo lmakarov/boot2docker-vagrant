@@ -1,3 +1,9 @@
+# Vagrant should NOT be run as root (with sudo).
+if Process.uid == 0
+  puts "No `sudo vagrant ...` please. Vagrant should be run as a regular user to avoid issues."
+  exit
+end
+
 Vagrant.require_version ">= 1.6.3"
 
 Vagrant.configure("2") do |config|
