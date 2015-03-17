@@ -19,10 +19,13 @@ Vagrant.configure("2") do |config|
   #config.vm.network "private_network", ip: "192.168.10.12"
   #config.vm.network "private_network", ip: "192.168.10.13"
 
+  # Vagrantfile location.
+  vagrant_root = File.dirname(__FILE__)
+
   # Synced folder setup
   if Vagrant::Util::Platform.windows?
-    # Default/Windows mount (vboxfs)
-    config.vm.synced_folder ".", "/vagrant"
+    # Default/Windows mount using vboxfs (SLOW!)
+    config.vm.synced_folder vagrant_root, vagrant_root
     # Uncomment for better performance on Windows (mount via SMB).
     # Requires Vagrant to be run with admin privileges.
     # Will also prompt for the Windows username and password to access the share.
@@ -32,7 +35,6 @@ Vagrant.configure("2") do |config|
     # Required for the docker-compose client to work from the OSX host.
     # NFS mount works much-much faster on OSX compared to the default vboxfs.
     # See https://github.com/mitchellh/vagrant/issues/2304 for why NFS over TCP may be better than over UDP.
-    vagrant_root = File.dirname(__FILE__)
     #config.vm.synced_folder vagrant_root, vagrant_root, type: "nfs", mount_options: ["nolock", "vers=3", "udp"]
     config.vm.synced_folder vagrant_root, vagrant_root, type: "nfs", mount_options: ["nolock", "vers=3", "tcp"]
     
@@ -66,6 +68,15 @@ Vagrant.configure("2") do |config|
           blinkreaction/docker-compose'"'" >> /home/docker/.ashrc
       echo 'alias fig=docker-compose' >> /home/docker/.ashrc
     SCRIPT
+  end
+
+  # Pass vagrant_root variable to the VM and cd into the directory upon login.
+  config.vm.provision "shell", run: "always" do |s|
+    s.inline = <<-SCRIPT
+      echo "export VAGRANT_ROOT=$1" >> /home/docker/.profile
+      echo "cd $1" >> /home/docker/.ashrc
+    SCRIPT
+    s.args = "#{vagrant_root}"
   end
 
 end
