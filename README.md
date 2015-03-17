@@ -15,15 +15,13 @@ Copy the Vagrantfile in this repo into your < Projects > (shared boo2docker VM) 
 
 ### One-liner for the lazy Mac people (OSX only!)
 
-This installs the following prerequisites and dependencies: brew, cask, virtualbox, vagrant, docker
+This installs the following prerequisites and dependencies: brew, cask, virtualbox, vagrant, docker, docker-compose
 
     curl https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/setup.sh | bash
 
 ## What is this?
 This is a temporary solution to get a better performance with docker data volumes mounted from your OSX host.  
 Boot2docker currently mounts host volumes via the default VirtualBox Guest Additions (vboxfs) mode, which is terribly slow on OSX. Much better performance can be achieved with NFS.
-
-There is a customzed boot2docker box available on Vagrantcloud which adds support for NFS mounts - [yungsang/boot2docker]( https://vagrantcloud.com/yungsang/boxes/boot2docker)
 
 ## How does it work?
 Vagrant mounts the root directory (were the Vagrantfile is located) via NFS inside the boot2docker VM with the same path as on the host.  

@@ -10,7 +10,7 @@ brew cask install virtualbox vagrant
 # Install docker and docker-compose
 brew install docker docker-compose
 
-# Vagrantfile and boot2docker VM
+# Download Vagrantfile and start the boot2docker VM
 curl -O https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/Vagrantfile && vagrant up
 
 # Export DOCKER_HOST variable in ~/.bash_profile
