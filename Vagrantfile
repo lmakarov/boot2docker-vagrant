@@ -79,5 +79,36 @@ Vagrant.configure("2") do |config|
     SCRIPT
     s.args = "#{vagrant_root}"
   end
+  
+  # dsh script lookup wrapper (Drude Shell)
+  # https://github.com/blinkreaction/drude
+  config.vm.provision "shell", run: "always" do |s|
+    s.inline = <<-SCRIPT
+      DSH_SCRIPT='
+      #/bin/sh
+
+      up="../"
+      pathup="./"
+      slashes=$(pwd | sed "s/[^\/]//g")
+      found=1
+      for i in $(seq 0 ${#slashes}) ; do 
+        if [ -d "${pathup}.docker" ] ; then
+          found=0
+          break
+        else
+          pathup=$pathup$up
+        fi
+      done
+
+      if [ $found -eq 0 ]; then
+        ${pathup}.docker/bin/dsh $*
+      else
+        echo "error: drude bin utils (.docker/bin) directory was not found"
+      fi
+      '
+      echo "$DSH_SCRIPT" > /usr/local/bin/dsh
+      chmod +x /usr/local/bin/dsh
+    SCRIPT
+  end
 
 end
