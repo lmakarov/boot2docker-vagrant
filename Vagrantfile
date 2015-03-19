@@ -19,10 +19,13 @@ Vagrant.configure("2") do |config|
   #config.vm.network "private_network", ip: "192.168.10.12"
   #config.vm.network "private_network", ip: "192.168.10.13"
 
+  # Synced folders
+
+  # Make host SSH keys available to containers on /.ssh
+  config.vm.synced_folder "~/.ssh", "/.ssh"
+
   # Vagrantfile location.
   vagrant_root = File.dirname(__FILE__)
-
-  # Synced folder setup
   if Vagrant::Util::Platform.windows?
     # Default/Windows mount using vboxfs (SLOW!)
     config.vm.synced_folder vagrant_root, vagrant_root
