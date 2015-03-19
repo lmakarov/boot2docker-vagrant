@@ -43,9 +43,12 @@ Vagrant.configure("2") do |config|
     config.nfs.map_gid = Process.gid
   end
   
-  # CPU and memory settings
   config.vm.provider "virtualbox" do |v|
-    v.cpus = 1  # VirtualBox works much better with a single CPU.
+    # VirtualBox VM name
+    v.name = File.basename(vagrant_root) + "_boot2docker"
+    # CPU settings. VirtualBox works much better with a single CPU.
+    v.cpus = 1
+    # Memory settings.
     v.memory = 2048
   end
 
