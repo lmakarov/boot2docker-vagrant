@@ -1,41 +1,82 @@
-# boot2docker-vagrant
-Vagrant based boot2docker box with NFS mounts support for better performance on OSX.  
-Windows hosts will fall back to the defaukt vboxfs shared folders in Virtualbox.
+# Boot2docker Vagrant Box
+Boot2docker Vagrant box for optimized Docker and Docker Compose use on Mac and Windows.
+
+## What is this?
+This is a temporary solution to achive better performance with synced folders and docker data volumes on Mac and Windows.  
+The stock boot2docker currently mounts host volumes via the default VirtualBox Guest Additions (vboxfs) mode, which is terribly slow. Much better performance can be achieved with NFS, SMB or rsync.
+
+Supports all [Synced Folder](http://docs.vagrantup.com/v2/synced-folders/) options provided by Vagrant:
+- vboxfs - native VirtualBox method, cross-platform, convenient and reliable, terribly slow
+- NFS - better performance and convenience for Mac
+- SMB - better performance and convenience for Windows (on par with NFS on Mac)
+- rsync - best performance, cross-platform, one-way only
 
 ## Requirements
 1. [VirtualBox](https://www.virtualbox.org/)
 2. [Vagrant](https://www.vagrantup.com/) 1.6.3+
 
-## TL;DR. How to use.
-Copy the Vagrantfile in this repo into your < Projects > (shared boo2docker VM) or < Project > (dedicated boot2docker VM) directory.
+## Setup and usage
 
-    $ vagrant up
-    $ export DOCKER_HOST=tcp://localhost:2375
-    $ docker version
-
-### One-liner for the lazy Mac people (OSX only!)
-
+### Automatic installation (Mac only)
 This installs the following prerequisites and dependencies: brew, cask, virtualbox, vagrant, docker, docker-compose
 
     curl https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/setup.sh | bash
 
-## What is this?
-This is a temporary solution to get a better performance with docker data volumes mounted from your OSX host.  
-Boot2docker currently mounts host volumes via the default VirtualBox Guest Additions (vboxfs) mode, which is terribly slow on OSX. Much better performance can be achieved with NFS.
+### Manual installation
+1. Copy the Vagrantfile in this repo into your < Projects > (shared boo2docker VM for multiple projects, recommended) or < Project > (dedicated boot2docker VM) directory.
+2. Start the VM
 
-## How does it work?
-Vagrant mounts the root directory (were the Vagrantfile is located) via NFS inside the boot2docker VM with the same path as on the host.  
+    ```
+    vagrant up
+    ```
 
-    /User/<username>/Projects/MyProject on the host => /User/<username>/Projects/MyProject in the boot2docker VM.
+3. Configure DOCKER_HOST and verify docker client can connect to it
+    
+    ```
+    export DOCKER_HOST=tcp://localhost:2375
+    docker version
+    ```
 
-Docker containers inside boot2docker can then mount volumes transparently as if they were mounted directry from the host. This is especially important for [Fig](http://www.fig.sh), which otherwise will not work properly with data volumes on Mac.
+## Synced Folder options
 
-See [Managing Data in Containers](https://docs.docker.com/userguide/dockervolumes/) for more infor on data volumes with docker.
+Follow the instructions in the Vagrantfile (**Synced folders configuration** section) to switch between different options.
+
+    WARNING:
+    Make sure only one is enabled at a time (nfs/smb, vboxfs, rsync).
+    If several synced folders options are enabled at the same time the last one takes precedence.
+
+### Mac
+On Mac NFS provides good performance and convenience. It is the default option configured in the Vagrantfile.
+
+Option comparison for Mac Drupal developers (using `time drush si -y` as a test case):
+- vboxfs: 6x (slowest)
+- NFS: 1.3x
+- rsync: 1x (fastest)
+
+### Windows
+On Windows SMB provides good performance and convenience. It is the default option configured in the Vagrantfile.
+
+Option comparison for Windows Drupal developers (using `time drush si -y` as a test case):
+- vboxfs: 5x (slowest)
+- SMB: 2x
+- rsync: 1x (fastest)
+
+**SMB**
+
+SMB requires vagrant to be started as an administrator.
+This can be done by launching the Git Bash shell as an administrator, then starting vagrant from there (`vagrant up`).
+
+**rsync**
+
+rsync is not natively available on Windows.
+Git for Windows comes with Git Bash shell, which is based on [MinGW/MSYS](http://www.mingw.org/wiki/msys)
+MSYS has a package for rsync, which can be installed and accessed via Git Bash.
+
+Download and extract the content on this [archive](https://drive.google.com/open?id=0B130F0xKxOWCTUN1d3djZGZ0M2M&authuser=0) into the `bin` directory of your Git installation (e.g. `c:\Program Files (x86)\Git\bin\`).
 
 ## Tips
 
 ### Automate DOCKER_HOST variable export
-
 Add the following in your .bashrc, .zshrc, etc. file to automate the environment variable export:
 
     # Docker (default for Vagrant based boxes)
@@ -53,11 +94,9 @@ This way if boot2docker is NOT running, your `DOCKER_HOST` will default to `tcp:
 Otherwise `$(boot2docker shellinit)` will overwrite the variables and set `DOCKER_HOST` to point to the boot2docker VM.
 
 ### Vagrant control
-
 Vagrant can be controlled (e.g. `vagrant up`, `vagrant ssh`, `vagrant reload`, etc.) from the root directory of the Vagrantfile as well as from any subdirectory. This is very usefull when working with multiple projects in subdirectories.
 
 ### Sublime Text 3 users
-
 Add this to your user settings (Sublime Text > Preferences > Settings - User):
 
     {
