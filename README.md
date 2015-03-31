@@ -74,8 +74,8 @@ This can be done by launching the Git Bash shell as an administrator, then start
 
 **rsync**
 
-rsync is not natively available on Windows.
-Git for Windows comes with Git Bash shell, which is based on [MinGW/MSYS](http://www.mingw.org/wiki/msys)
+rsync is not natively available on Windows.  
+Git for Windows comes with Git Bash shell, which is based on [MinGW/MSYS](http://www.mingw.org/wiki/msys).  
 MSYS has a package for rsync, which can be installed and accessed via Git Bash.
 
 Download and extract the content on this [archive](https://drive.google.com/open?id=0B130F0xKxOWCTUN1d3djZGZ0M2M&authuser=0) into the `bin` directory of your Git installation (e.g. `c:\Program Files (x86)\Git\bin\`).
