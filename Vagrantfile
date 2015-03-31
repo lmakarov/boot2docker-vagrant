@@ -60,7 +60,7 @@ Vagrant.configure("2") do |config|
   ####################################################################
 
   # Make host SSH keys available to containers on /.ssh
-  if File.directory?("~/.ssh")
+  if File.directory?(File.expand_path("~/.ssh"))
     config.vm.synced_folder "~/.ssh", "/.ssh"
   end
 
