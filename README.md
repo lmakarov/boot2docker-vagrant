@@ -12,8 +12,9 @@ Supports all [Synced Folder](http://docs.vagrantup.com/v2/synced-folders/) optio
 - rsync - best performance, cross-platform, one-way only
 
 ## Requirements
-1. [VirtualBox](https://www.virtualbox.org/)
+1. [VirtualBox](https://www.virtualbox.org/) 4.3.20+
 2. [Vagrant](https://www.vagrantup.com/) 1.6.3+
+3. [Git](http://git-scm.com/)
 
 ## Setup and usage
 
@@ -22,19 +23,24 @@ This installs the following prerequisites and dependencies: brew, cask, virtualb
 
     curl https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/setup.sh | bash
 
-### Manual installation
+### Manual installation (Windows)
+
+**On Windows** Git Bash is the recommended option to run console commands.  
+If you are having any issues, please check if they can be reproduced in Git Bash.
+
 1. Copy the Vagrantfile in this repo into your < Projects > (shared boo2docker VM for multiple projects, recommended) or < Project > (dedicated boot2docker VM) directory.
-2. Start the VM
+2. Start the VM and log into it
 
     ```
     vagrant up
+    vagrant ssh
     ```
 
-3. Configure DOCKER_HOST and verify docker client can connect to it
+3. Verify installation (you are in the boot2docker VM at this point)
     
     ```
-    export DOCKER_HOST=tcp://localhost:2375
     docker version
+    docker-compose --version
     ```
 
 ## Synced Folder options
