@@ -11,11 +11,13 @@ Supports all [Synced Folder](http://docs.vagrantup.com/v2/synced-folders/) optio
 - SMB - better performance and convenience for Windows (on par with NFS on Mac)
 - rsync - best performance, cross-platform, one-way only
 
+<a name="requirements"></a>
 ## Requirements
 1. [VirtualBox](https://www.virtualbox.org/) 4.3.20+
 2. [Vagrant](https://www.vagrantup.com/) 1.6.3+
 3. [Git](http://git-scm.com/)
 
+<a name="setup"></a>
 ## Setup and usage
 
 ### Automatic installation (Mac only)
@@ -25,13 +27,15 @@ This installs the following prerequisites and dependencies: brew, cask, virtualb
 
 ### Manual installation (Windows)
 
-**On Windows** Git Bash is the recommended option to run console commands.  
+**On Windows** Git Bash is the recommended option to run console commands. **It must be run as an administrator.**  
 If you are having any issues, please check if they can be reproduced in Git Bash.
 
-1. Copy the Vagrantfile in this repo into your < Projects > (shared boo2docker VM for multiple projects, recommended) or < Project > (dedicated boot2docker VM) directory.
-2. Start the VM and log into it
+1. Copy the Vagrantfile in this repo into your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory.
+2. Launch Git Bash as administrator
+3. cd to `</path/to/project>`, start the VM and log into it
 
     ```
+    cd </path/to/project>
     vagrant up
     vagrant ssh
     ```
@@ -43,7 +47,8 @@ If you are having any issues, please check if they can be reproduced in Git Bash
     docker-compose --version
     ```
 
-## Synced Folder options
+<a name="synced-folders"></a>
+## Synced Folders options
 
 Follow the instructions in the Vagrantfile (**Synced folders configuration** section) to switch between different options.
 
@@ -51,6 +56,7 @@ Follow the instructions in the Vagrantfile (**Synced folders configuration** sec
     Make sure only one is enabled at a time (nfs/smb, vboxfs, rsync).
     If several synced folders options are enabled at the same time the last one takes precedence.
 
+<a name="synced-folders-mac"></a>
 ### Mac
 On Mac NFS provides good performance and convenience. It is the default option configured in the Vagrantfile.
 
@@ -59,8 +65,9 @@ Option comparison for Mac Drupal developers (using `time drush si -y` as a test 
 - NFS: 1.3x
 - rsync: 1x (fastest)
 
+<a name="synced-folders-win"></a>
 ### Windows
-On Windows SMB provides good performance and convenience. It is the default option configured in the Vagrantfile.
+On Windows SMB provides good performance and convenience. It is the default option configured in the Vagrantfile.  
 
 Option comparison for Windows Drupal developers (using `time drush si -y` as a test case):
 - vboxfs: 5x (slowest)
@@ -69,8 +76,8 @@ Option comparison for Windows Drupal developers (using `time drush si -y` as a t
 
 **SMB**
 
-SMB requires vagrant to be started as an administrator.
-This can be done by launching the Git Bash shell as an administrator, then starting vagrant from there (`vagrant up`).
+To use the SMB synced folder type the command prompt executing Vagrant must have administrative privileges.  
+This can be done by launching the Git Bash shell as an administrator, then do `vagrant up` there.
 
 **rsync**
 
@@ -83,6 +90,9 @@ Download and extract the content on this [archive](https://drive.google.com/open
 ## Tips
 
 ### Automate DOCKER_HOST variable export
+
+    This is only necessary for manual instllations. Install script takes care of this for you.
+
 Add the following in your .bashrc, .zshrc, etc. file to automate the environment variable export:
 
     # Docker (default for Vagrant based boxes)
