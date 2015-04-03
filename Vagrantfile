@@ -4,6 +4,15 @@ if is_windows
   require 'win32ole'
   # Determine if Vagrant was launched from the elevated command prompt
   running_as_admin = ((`reg query HKU\\S-1-5-19 2>&1` =~ /ERROR/).nil? && is_windows)
+
+  # Method to create a network share on Windows using elevated command prompt
+  def windows_net_share(share, path)
+    command = 'cmd.exe'
+    args = "/C net share #{share}=#{path} /grant:everyone,FULL || timeout 5"
+    puts args
+    shell = WIN32OLE.new('Shell.Application')
+    shell.ShellExecute(command, args, nil, 'runas')
+  end
 else
   # Determine if Vagrant was launched with sudo (as root).
   running_as_root = (Process.uid == 0)
@@ -48,6 +57,18 @@ Vagrant.configure("2") do |config|
     # Will also prompt for the Windows username and password to access the share.
     config.vm.synced_folder vagrant_root, vagrant_mount, type: "smb"
     
+    # # Manual SMB share setup
+    # # Create the share on the Windows host
+    # windows_net_share(vagrant_share, vagrant_root)
+    # # Mount the share in boot2docker
+    # config.vm.provision "shell", run: "always" do |s|
+    #   s.inline = <<-SCRIPT
+    #     mkdir -p vagrant $2
+    #     mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,sec=ntlm,username=$3,pass=$4 //192.168.10.1/$1 $2
+    #   SCRIPT
+    #   s.args = "#{vagrant_share} #{vagrant_mount} #{smb_username} #{smb_passowrd}"
+    # end  
+
   # Mac
   else
     # Uncomment for better performance on Mac (mount via NFS).
