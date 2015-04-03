@@ -1,9 +1,26 @@
-# Vagrant should NOT be run as root (with sudo).
-if Process.uid == 0 and !Vagrant::Util::Platform.windows?
-  puts "No `sudo vagrant ...` please. Vagrant should be run as a regular user to avoid issues."
-  exit
+# Determine if we are on Windows host or not
+is_windows = Vagrant::Util::Platform.windows?
+if is_windows
+  require 'win32ole'
+  # Determine if Vagrant was launched from the elevated command prompt
+  running_as_admin = ((`reg query HKU\\S-1-5-19 2>&1` =~ /ERROR/).nil? && is_windows)
+else
+  # Determine if Vagrant was launched with sudo (as root).
+  running_as_root = (Process.uid == 0)
 end
 
+# Vagrant should NOT be run as root/admin.
+if running_as_root || running_as_admin
+  raise "Vagrant should be run as a regular user to avoid issues."
+end
+
+vagrant_root = File.dirname(__FILE__)  # Vagrantfile location
+vagrant_mount = vagrant_root.gsub(/[a-zA-Z]:/, '')  # Trim Windows drive letters
+vagrant_folder = File.basename(vagrant_root)  # Folder name only. Used as the SMB share name 
+
+######################################################################
+
+# Vagrant Box Configuration #
 Vagrant.require_version ">= 1.6.3"
 
 Vagrant.configure("2") do |config|
@@ -21,17 +38,11 @@ Vagrant.configure("2") do |config|
   #config.vm.network "private_network", ip: "192.168.10.12"
   #config.vm.network "private_network", ip: "192.168.10.13"
 
-
-  # Vagrantfile location
-  vagrant_root = File.dirname(__FILE__)
-  # Trim Windows drive letters
-  vagrant_mount = vagrant_root.gsub(/[a-zA-Z]:/, '')
-
  ####################################################################
  ## Synced folders configuration ##
 
   # Windows
-  if Vagrant::Util::Platform.windows?
+  if is_windows
     # Uncomment for better performance on Windows (mount via SMB).
     # Requires Vagrant to be run with admin privileges.
     # Will also prompt for the Windows username and password to access the share.
@@ -57,7 +68,7 @@ Vagrant.configure("2") do |config|
   # Uncomment for the best performance (using rsync). Run `vagrant rsync-auto` to start auto sync.
   #config.vm.synced_folder vagrant_root, vagrant_mount, type: "rsync", rsync__exclude: ".git/"
   
-  ####################################################################
+  ######################################################################
 
   # Make host SSH keys available to containers on /.ssh
   if File.directory?(File.expand_path("~/.ssh"))
@@ -68,7 +79,7 @@ Vagrant.configure("2") do |config|
   
   config.vm.provider "virtualbox" do |v|
     #v.gui = true  # Uncomment for debugging 
-    v.name = File.basename(vagrant_root) + "_boot2docker"  # VirtualBox VM name
+    v.name = vagrant_folder + "_boot2docker"  # VirtualBox VM name
     v.cpus = 1  # CPU settings. VirtualBox works much better with a single CPU.
     v.memory = 2048  # Memory settings.
   end
