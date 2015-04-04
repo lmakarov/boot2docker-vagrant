@@ -5,12 +5,6 @@ Boot2docker Vagrant box for optimized Docker and Docker Compose use on Mac and W
 This is a temporary solution to achive better performance with synced folders and docker data volumes on Mac and Windows.  
 The stock boot2docker currently mounts host volumes via the default VirtualBox Guest Additions (vboxfs) mode, which is terribly slow. Much better performance can be achieved with NFS, SMB or rsync.
 
-Supports all [Synced Folder](http://docs.vagrantup.com/v2/synced-folders/) options provided by Vagrant:
-- vboxfs - native VirtualBox method, cross-platform, convenient and reliable, terribly slow
-- NFS - better performance and convenience for Mac
-- SMB - better performance and convenience for Windows (on par with NFS on Mac)
-- rsync - best performance, cross-platform, one-way only
-
 <a name="requirements"></a>
 ## Requirements
 1. [VirtualBox](https://www.virtualbox.org/) 4.3.20+
@@ -27,12 +21,12 @@ This installs the following prerequisites and dependencies: brew, cask, virtualb
 
 ### Manual installation (Windows)
 
-**On Windows** Git Bash is the recommended option to run console commands. **It must be run as an administrator.**  
+**On Windows** Git Bash is the recommended option to run console commands.
 If you are having any issues, please check if they can be reproduced in Git Bash.
 
 1. Copy `Vagrantfile` and `vagrant.yml.dist` files from this repo into your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory.
 2. Rename `vagrant.yml.dist` to `vagrant.yml`
-3. Launch Git Bash as administrator
+3. Launch Git Bash
 4. cd to `</path/to/project>`, start the VM and log into it
 
     ```
@@ -51,42 +45,60 @@ If you are having any issues, please check if they can be reproduced in Git Bash
 <a name="synced-folders"></a>
 ## Synced Folders options
 
-Follow the instructions in the Vagrantfile (**Synced folders configuration** section) to switch between different options.
+This box supports all [Synced Folder](http://docs.vagrantup.com/v2/synced-folders/) options provided by Vagrant:
+- vboxfs - native VirtualBox method, cross-platform, convenient and reliable, terribly slow
+- NFS - better performance and convenience for Mac
+- SMB - better performance and convenience for Windows (on par with NFS on Mac)
+- rsync - best performance, cross-platform, one-way only
 
-    WARNING:
-    Make sure only one is enabled at a time (nfs/smb, vboxfs, rsync).
-    If several synced folders options are enabled at the same time the last one takes precedence.
+Follow the instructions in the `vagrant.yml` file to switch between different sync options.
+The best balance between performance and convenience can be achieved with NFS on Mac (default) and SMB on Windows (not default).
+
+Additional steps are required to get SMB or rsync to work on Windows. [See below](#synced-folders-win).
 
 <a name="synced-folders-mac"></a>
 ### Mac
-On Mac NFS provides good performance and convenience. It is the default option configured in the Vagrantfile.
 
 Option comparison for Mac Drupal developers (using `time drush si -y` as a test case):
 - vboxfs: 6x (slowest)
 - NFS: 1.3x
 - rsync: 1x (fastest)
 
+NFS provides good performance and convenience. It is the default and recommended option on Mac.
+
 <a name="synced-folders-win"></a>
 ### Windows
-On Windows SMB provides good performance and convenience. It is the default option configured in the Vagrantfile.  
 
 Option comparison for Windows Drupal developers (using `time drush si -y` as a test case):
 - vboxfs: 5x (slowest)
 - SMB: 2x
 - rsync: 1x (fastest)
 
-**SMB**
+SMB provides good performance and convenience. It is the recommended option, but NOT the default one on Windows.
 
-To use the SMB synced folder type the command prompt executing Vagrant must have administrative privileges.  
-This can be done by launching the Git Bash shell as an administrator, then do `vagrant up` there.
+**Enabling SMB**
 
-**rsync**
+To use the SMB synced folder type: 
+
+1. Stop the VM with: `vagrant halt`
+2. Choose `smb` as the sync type in the `vagrant.yml` file.
+3. Launch Git Bash as an administrator
+4. Start the VM: `vagrant up`
+
+While using SMB you have to control Vagrant from an elevated (run as admin) Git Bash shell.
+
+**Enabling rsync**
 
 rsync is not natively available on Windows.  
 Git for Windows comes with Git Bash shell, which is based on [MinGW/MSYS](http://www.mingw.org/wiki/msys).  
 MSYS has a package for rsync, which can be installed and accessed via Git Bash.
 
-Download and extract the content on this [archive](https://drive.google.com/open?id=0B130F0xKxOWCTUN1d3djZGZ0M2M&authuser=0) into the `bin` directory of your Git installation (e.g. `c:\Program Files (x86)\Git\bin\`).
+To use rsync on Windows:
+
+1. Download and extract the content on this [archive](https://drive.google.com/open?id=0B130F0xKxOWCTUN1d3djZGZ0M2M&authuser=0) into the `bin` directory of your Git installation (e.g. `c:\Program Files (x86)\Git\bin\`).
+2. Choose `rsync` as the sync type in the `vagrant.yml` file.
+3. Provide an explicit list of folders to sync in the `vagrant.yml` file (`folders` sequence).
+4. Reload the VM: `vagrant reload`
 
 ## Tips
 
