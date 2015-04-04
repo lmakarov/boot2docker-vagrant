@@ -1,10 +1,15 @@
 
+# Determine paths
+vagrant_root = File.dirname(__FILE__)  # Vagrantfile location
+vagrant_mount = vagrant_root.gsub(/[a-zA-Z]:/, '')  # Trim Windows drive letters
+vagrant_folder = File.basename(vagrant_root)  # Folder name only. Used as the SMB share name 
+
 # Use vagrant.yml for local VM configuration overrides.
 require 'yaml'
-if !File.exist?('vagrant.yml')
+if !File.exist?(vagrant_root + '/vagrant.yml')
   raise 'Configuration file not found! Please copy vagrant.yml.dist to vagrant.yml and try again.'
 end
-vconfig = YAML::load_file("vagrant.yml")
+vconfig = YAML::load_file(vagrant_root + '/vagrant.yml')
 
 # Determine if we are on Windows host or not
 is_windows = Vagrant::Util::Platform.windows?
@@ -31,10 +36,6 @@ if running_as_root
 # || running_as_admin
   raise "Vagrant should be run as a regular user to avoid issues."
 end
-
-vagrant_root = File.dirname(__FILE__)  # Vagrantfile location
-vagrant_mount = vagrant_root.gsub(/[a-zA-Z]:/, '')  # Trim Windows drive letters
-vagrant_folder = File.basename(vagrant_root)  # Folder name only. Used as the SMB share name 
 
 ######################################################################
 
