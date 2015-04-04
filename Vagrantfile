@@ -77,7 +77,7 @@ Vagrant.configure("2") do |config|
   # smb2: experimental, does not require running vagrant as admin, requires initial manual setup.
   elsif synced_folders['type'] == "smb2" && is_windows
     # Create the share on the Windows host
-    #windows_net_share(vagrant_share, vagrant_root)
+    #windows_net_share vagrant_share, vagrant_root
     #Mount the share in boot2docker
     config.vm.provision "shell", run: "always" do |s|
       s.inline = <<-SCRIPT
@@ -88,10 +88,17 @@ Vagrant.configure("2") do |config|
     end  
   # rsync: the best performance, cross-platform platform, one-way only. Run `vagrant rsync-auto` to start auto sync.
   elsif synced_folders['type'] == "rsync"
-    config.vm.synced_folder vagrant_root, vagrant_mount,
-      type: "rsync",
-      rsync__exclude: ".git/",
-      rsync__args: ["--verbose", "--archive", "--delete", "-z", "--chmod=ugo=rwX"]
+    # Only sync explicitly listed folders.
+    if (synced_folders['folders']).nil?
+      puts "WARNING: 'folders' list cannot be empty when using 'rsync' sync type. Please check your vagrant.yml file."
+    else
+      for synced_folder in synced_folders['folders'] do
+        config.vm.synced_folder "#{vagrant_root}/#{synced_folder}", "#{vagrant_mount}/#{synced_folder}",
+          type: "rsync",
+          rsync__exclude: ".git/",
+          rsync__args: ["--verbose", "--archive", "--delete", "-z", "--chmod=ugo=rwX"]
+      end
+    end
   # vboxfs: reliable, cross-platform and terribly slow performance
   else
     puts "WARNING: defaulting to the slowest sync option (vboxfs)"
