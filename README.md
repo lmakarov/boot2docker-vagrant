@@ -30,9 +30,10 @@ This installs the following prerequisites and dependencies: brew, cask, virtualb
 **On Windows** Git Bash is the recommended option to run console commands. **It must be run as an administrator.**  
 If you are having any issues, please check if they can be reproduced in Git Bash.
 
-1. Copy the Vagrantfile in this repo into your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory.
-2. Launch Git Bash as administrator
-3. cd to `</path/to/project>`, start the VM and log into it
+1. Copy `Vagrantfile` and `vagrant.yml.dist` files from this repo into your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory.
+2. Rename `vagrant.yml.dist` to `vagrant.yml`
+3. Launch Git Bash as administrator
+4. cd to `</path/to/project>`, start the VM and log into it
 
     ```
     cd </path/to/project>
@@ -40,7 +41,7 @@ If you are having any issues, please check if they can be reproduced in Git Bash
     vagrant ssh
     ```
 
-3. Verify installation (you are in the boot2docker VM at this point)
+5. Verify installation (you are in the boot2docker VM at this point)
     
     ```
     docker version

@@ -34,6 +34,10 @@ brew install docker-compose
 echo -e "${green}Downloading Vagrantfile into the current directory...${NC}"
 curl -O https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/Vagrantfile
 
+# Download and renaming vagrant.yml.dist
+echo -e "${green}Downloading and renaming vagrant.yml.dist into the current directory...${NC}"
+curl https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/vagrant.yml.dist > vagrant.yml
+
 # Start the boot2docker VM
 echo -e "${green}Starting the boot2docker VM...${NC}"
 vagrant up
