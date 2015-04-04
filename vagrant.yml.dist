@@ -5,7 +5,7 @@ synced_folders:
     # smb2: experimental, does not require running vagrant as admin, requires initial manual setup.
     # rsync: the best performance, cross-platform platform, one-way only. Run `vagrant rsync-auto` to start auto sync.
     # vboxfs (or leave empty): best compatibility and ease of setup, but poor performance.
-    type: 'smb2'
+    type: 'nfs'
     # smb_user, smb_password - The username and password used for authentication to mount the SMB mount.
     # This is usually your Windows username and password, unless you created a dedicated user for vagrant.
     smb_username: ''
