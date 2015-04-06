@@ -100,6 +100,27 @@ To use rsync on Windows:
 3. Provide an explicit list of folders to sync in the `vagrant.yml` file (`folders` sequence).
 4. Reload the VM: `vagrant reload`
 
+**SMB2 (experimental option)**
+
+This is an experimental option.  
+Compared to `smb`, `smb2` does not require running vagrant as admin, but requires initial manual setup:
+
+1. Create a Windows user with a password (e.g. `vagrant:<password>`)
+2. Share the `<Projects>` directory.
+    > The share name has to match the directory name.  
+    > E.g. share `C:\Work\Projects` as `Projects`
+
+3. Give the user created in step 1 full access to the share.
+4. Update `vagrant.yml`:
+    > ...  
+    > type: 'smb2'  
+    > ...  
+    > smb_username: '<username>'  
+    > smb_password: '<password>'  
+    > ...
+
+5. Reload the VM (`vagrant reload`)
+
 ## Tips
 
 ### Automate DOCKER_HOST variable export
