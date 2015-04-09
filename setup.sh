@@ -36,7 +36,7 @@ brew install docker-compose
 
 # Download Vagrantfile
 echo -e "${green}Downloading Vagrantfile into the current directory...${NC}"
-curl -O https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/Vagrantfile
+curl -sO https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/Vagrantfile
 
 # Start the boot2docker VM
 echo -e "${green}Starting the boot2docker VM...${NC}"
