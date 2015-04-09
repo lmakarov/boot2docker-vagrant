@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.1 (2015-04-09)
+
+- Hotfix: added check for empty hosts in vagrant.yml
+
 ## 0.11.0 (2015-04-09)
 
 - Using semantic versioning and tracking changes in the CHANGELOG.md file
