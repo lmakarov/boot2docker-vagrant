@@ -121,11 +121,37 @@ Compared to `smb`, `smb2` does not require running vagrant as admin, but require
 
 5. Reload the VM (`vagrant reload`)
 
+<a name="vm-settings"></a>
+## VirtualBox VM settings
+
+Open `vagrant.yml` file and edit respective values.
+
+- `v.gui` - Set to `true` for debugging. This will unhide VM's primary console screen. Default: `false`.
+- `v.memory` - Memory settings (MB). Default: `2048`.
+- `v.cpus: 1`  - number of virtual CPU cores. Default: `1`.
+
+Please note, VirtualBox works much better with a single CPU in most cases, this it is not recommended to change the `v.cpus` value.
+
+<a name="vm-network"></a>
+## Network settings
+
+The default box private network IP is `192.168.10.10`.
+To map additional IP addresses for use with multiple projects open `vagrant.yml` and ucomment respective lines:
+
+```yaml
+hosts:
+    - ip: 192.168.10.11
+    - ip: 192.168.10.12
+    - ip: 192.168.10.13
+```
+
+Project specific `<IP>:<port>` mapping for containers is done in via docker-compose in `docker-compose.yml`
+
 ## Tips
 
 ### Automate DOCKER_HOST variable export
 
-    This is only necessary for manual instllations. Install script takes care of this for you.
+This is only necessary for manual instllations. On Mac the [setup.sh](setup.sh) scripts takes care of this for you.
 
 Add the following in your .bashrc, .zshrc, etc. file to automate the environment variable export:
 

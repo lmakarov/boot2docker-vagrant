@@ -51,11 +51,10 @@ Vagrant.configure("2") do |config|
   ## Network ##
 
   # The default box private network IP is 192.168.10.10
-  # Uncomment lines below to map additional IP addresses for use with multiple projects.
-  # Project specific IP:port mapping for containers is done in via docker-compose (docker-compose.yml)
-  #config.vm.network "private_network", ip: "192.168.10.11"
-  #config.vm.network "private_network", ip: "192.168.10.12"
-  #config.vm.network "private_network", ip: "192.168.10.13"
+  # Configure additional IP addresses in vagrant.yml
+  for host in vconfig['hosts'] do
+    config.vm.network "private_network", ip: host['ip']
+  end
 
  ####################################################################
  ## Synced folders configuration ##
