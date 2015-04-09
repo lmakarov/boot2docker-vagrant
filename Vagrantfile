@@ -52,9 +52,9 @@ Vagrant.configure("2") do |config|
 
   # The default box private network IP is 192.168.10.10
   # Configure additional IP addresses in vagrant.yml
-  for host in vconfig['hosts'] do
+  vconfig['hosts'].each do |host|
     config.vm.network "private_network", ip: host['ip']
-  end
+  end unless vconfig['hosts'].nil?
 
  ####################################################################
  ## Synced folders configuration ##
