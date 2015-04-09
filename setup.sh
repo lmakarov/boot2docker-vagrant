@@ -14,6 +14,10 @@ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/
 echo -e "${green}Installing Cask...${NC}"
 brew install caskroom/cask/brew-cask
 
+# Update brew formulae
+echo -e "${green}Updating brew formulae...${NC}"
+brew update
+
 # VirtualBox installation
 echo -e "${green}Installing virtualbox...${NC}"
 brew cask install virtualbox
