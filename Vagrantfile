@@ -1,3 +1,5 @@
+# UI Object for console interactions.
+@ui = Vagrant::UI::Colored.new
 
 # Determine paths
 vagrant_root = File.dirname(__FILE__)  # Vagrantfile location
@@ -7,7 +9,7 @@ vagrant_folder_name = File.basename(vagrant_root)  # Folder name only. Used as t
 # Use vagrant.yml for local VM configuration overrides.
 require 'yaml'
 if !File.exist?(vagrant_root + '/vagrant.yml')
-  raise 'Configuration file not found! Please copy vagrant.yml.dist to vagrant.yml and try again.'
+  @ui.error 'Configuration file not found! Please copy vagrant.yml.dist to vagrant.yml and try again.'
 end
 vconfig = YAML::load_file(vagrant_root + '/vagrant.yml')
 
@@ -22,7 +24,7 @@ if is_windows
   def windows_net_share(share, path)
     command = 'cmd.exe'
     args = "/C net share #{share}=#{path} /grant:everyone,FULL || timeout 5"
-    puts args
+    @ui.info args
     shell = WIN32OLE.new('Shell.Application')
     shell.ShellExecute(command, args, nil, 'runas')
   end
@@ -89,7 +91,7 @@ Vagrant.configure("2") do |config|
   elsif synced_folders['type'] == "rsync"
     # Only sync explicitly listed folders.
     if (synced_folders['folders']).nil?
-      puts "WARNING: 'folders' list cannot be empty when using 'rsync' sync type. Please check your vagrant.yml file."
+      @ui.warn "WARNING: 'folders' list cannot be empty when using 'rsync' sync type. Please check your vagrant.yml file."
     else
       for synced_folder in synced_folders['folders'] do
         config.vm.synced_folder "#{vagrant_root}/#{synced_folder}", "#{vagrant_mount_point}/#{synced_folder}",
@@ -100,7 +102,7 @@ Vagrant.configure("2") do |config|
     end
   # vboxfs: reliable, cross-platform and terribly slow performance
   else
-    puts "WARNING: defaulting to the slowest sync option (vboxfs)"
+    @ui.warn "WARNING: defaulting to the slowest folder sync option (vboxfs)"
       config.vm.synced_folder vagrant_root, vagrant_mount_point
   end
 
