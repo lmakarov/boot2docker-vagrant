@@ -197,4 +197,16 @@ Vagrant.configure("2") do |config|
     SCRIPT
   end
 
+  # Automatically start containers if docker-compose.yml is present in the current directory.
+  # See "autostart" property in vagrant.yml.
+  if File.file?('./docker-compose.yml') && vconfig['compose_autostart']
+    config.vm.provision "shell", run: "always", privileged: false do |s|
+      s.inline = <<-SCRIPT
+        cd $1
+        docker-compose up -d
+      SCRIPT
+      s.args = "#{vagrant_mount_point}"
+    end
+  end
+
 end
