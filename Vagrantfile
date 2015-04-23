@@ -138,10 +138,20 @@ Vagrant.configure("2") do |config|
   # https://github.com/docker/compose/issues/598#issuecomment-67762456
   config.vm.provision "shell", run: "always" do |s|
     s.inline = <<-SCRIPT
-      echo 'docker run --rm -it \
-          -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock \
-          -e COMPOSE_PROJECT_NAME=$(basename $(pwd)) -w="$(pwd)" \
-          blinkreaction/docker-compose $*' > /usr/local/bin/docker-compose
+      DC_SCRIPT='
+      #/bin/sh
+
+      # Check if we are in an interactive shell and use "-it" flags if so.
+      interactive=$([ -t 0 ] && echo "-it")
+      
+      # Run docker-compose in a container
+      docker run --rm $interactive \
+        -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock \
+        -e COMPOSE_PROJECT_NAME=$(basename $(pwd)) -w="$(pwd)" \
+        blinkreaction/docker-compose:1.2.0 $*
+      '
+
+      echo "$DC_SCRIPT" > /usr/local/bin/docker-compose
       chmod +x /usr/local/bin/docker-compose
       echo 'alias fig=docker-compose' >> /home/docker/.ashrc
     SCRIPT
