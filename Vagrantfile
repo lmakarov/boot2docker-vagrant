@@ -1,8 +1,8 @@
 
 # Determine paths
 vagrant_root = File.dirname(__FILE__)  # Vagrantfile location
-vagrant_mount = vagrant_root.gsub(/[a-zA-Z]:/, '')  # Trim Windows drive letters
-vagrant_folder = File.basename(vagrant_root)  # Folder name only. Used as the SMB share name 
+vagrant_mount_point = vagrant_root.gsub(/[a-zA-Z]:/, '')  # Trim Windows drive letters
+vagrant_folder_name = File.basename(vagrant_root)  # Folder name only. Used as the SMB share name 
 
 # Use vagrant.yml for local VM configuration overrides.
 require 'yaml'
@@ -62,14 +62,14 @@ Vagrant.configure("2") do |config|
   synced_folders = vconfig['synced_folders']
   # nfs: better performance on Mac
   if synced_folders['type'] == "nfs"  && !is_windows
-    config.vm.synced_folder vagrant_root, vagrant_mount,
+    config.vm.synced_folder vagrant_root, vagrant_mount_point,
       type: "nfs",
       mount_options: ["nolock", "vers=3", "tcp"]
     config.nfs.map_uid = Process.uid
     config.nfs.map_gid = Process.gid
   # smb: better performance on Windows. Requires Vagrant to be run with admin privileges.
   elsif synced_folders['type'] == "smb" && is_windows
-    config.vm.synced_folder vagrant_root, vagrant_mount,
+    config.vm.synced_folder vagrant_root, vagrant_mount_point,
       type: "smb",
       smb_username: synced_folders['smb_username'],
       smb_password: synced_folders['smb_password']
@@ -83,7 +83,7 @@ Vagrant.configure("2") do |config|
         mkdir -p vagrant $2
         mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,sec=ntlm,username=$3,pass=$4 //192.168.10.1/$1 $2
       SCRIPT
-      s.args = "#{vagrant_folder} #{vagrant_mount} #{vconfig['synced_folders']['smb_username']} #{vconfig['synced_folders']['smb_password']}"
+      s.args = "#{vagrant_folder_name} #{vagrant_mount_point} #{vconfig['synced_folders']['smb_username']} #{vconfig['synced_folders']['smb_password']}"
     end  
   # rsync: the best performance, cross-platform platform, one-way only. Run `vagrant rsync-auto` to start auto sync.
   elsif synced_folders['type'] == "rsync"
@@ -92,7 +92,7 @@ Vagrant.configure("2") do |config|
       puts "WARNING: 'folders' list cannot be empty when using 'rsync' sync type. Please check your vagrant.yml file."
     else
       for synced_folder in synced_folders['folders'] do
-        config.vm.synced_folder "#{vagrant_root}/#{synced_folder}", "#{vagrant_mount}/#{synced_folder}",
+        config.vm.synced_folder "#{vagrant_root}/#{synced_folder}", "#{vagrant_mount_point}/#{synced_folder}",
           type: "rsync",
           rsync__exclude: ".git/",
           rsync__args: ["--verbose", "--archive", "--delete", "-z", "--chmod=ugo=rwX"]
@@ -101,7 +101,7 @@ Vagrant.configure("2") do |config|
   # vboxfs: reliable, cross-platform and terribly slow performance
   else
     puts "WARNING: defaulting to the slowest sync option (vboxfs)"
-      config.vm.synced_folder vagrant_root, vagrant_mount
+      config.vm.synced_folder vagrant_root, vagrant_mount_point
   end
 
   # Make host SSH keys available to containers on /.ssh
@@ -115,7 +115,7 @@ Vagrant.configure("2") do |config|
   
   config.vm.provider "virtualbox" do |v|
     v.gui = vconfig['v.gui']  # Set to true for debugging. Will unhide VM's primary console screen.
-    v.name = vagrant_folder + "_boot2docker"  # VirtualBox VM name
+    v.name = vagrant_folder_name + "_boot2docker"  # VirtualBox VM name
     v.cpus = vconfig['v.cpus']  # CPU settings. VirtualBox works much better with a single CPU.
     v.memory = vconfig['v.memory']  # Memory settings.
   end
@@ -150,7 +150,7 @@ Vagrant.configure("2") do |config|
       echo "export VAGRANT_ROOT=$1" >> /home/docker/.profile
       echo "cd $1" >> /home/docker/.ashrc
     SCRIPT
-    s.args = "#{vagrant_mount}"
+    s.args = "#{vagrant_mount_point}"
   end
   
   # dsh script lookup wrapper (Drude Shell)
