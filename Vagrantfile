@@ -47,7 +47,8 @@ Vagrant.require_version ">= 1.6.3"
 Vagrant.configure("2") do |config|
   config.vm.define "boot2docker"
 
-  config.vm.box = "dduportal/boot2docker"
+  config.vm.box = "blinkreaction/boot2docker"
+  config.vm.box_version = "1.6.0"
   config.vm.box_check_update = false
 
   ## Network ##
