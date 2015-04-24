@@ -1,7 +1,18 @@
 # UI Object for console interactions.
 @ui = Vagrant::UI::Colored.new
 
-# Determine paths
+# Install required plugins if not present.
+required_plugins = %w(vagrant-triggers)
+required_plugins.each do |plugin|
+  need_restart = false
+  unless Vagrant.has_plugin? plugin
+    system "vagrant plugin install #{plugin}"
+    need_restart = true
+  end
+  exec "vagrant #{ARGV.join(' ')}" if need_restart
+end
+
+# Determine paths.
 vagrant_root = File.dirname(__FILE__)  # Vagrantfile location
 vagrant_mount_point = vagrant_root.gsub(/[a-zA-Z]:/, '')  # Trim Windows drive letters
 vagrant_folder_name = File.basename(vagrant_root)  # Folder name only. Used as the SMB share name 
@@ -19,14 +30,45 @@ if is_windows
   require 'win32ole'
   # Determine if Vagrant was launched from the elevated command prompt
   running_as_admin = ((`reg query HKU\\S-1-5-19 2>&1` =~ /ERROR/).nil? && is_windows)
-
-  # Method to create a network share on Windows using elevated command prompt
-  def windows_net_share(share, path)
+  
+  # Run command in an elevated shell.
+  def windows_elevated_shell(args)
     command = 'cmd.exe'
-    args = "/C net share #{share}=#{path} /grant:everyone,FULL || timeout 5"
-    @ui.info args
+    args = "/C #{args} || timeout 10"
     shell = WIN32OLE.new('Shell.Application')
     shell.ShellExecute(command, args, nil, 'runas')
+  end
+
+  # Method to create the user and SMB network share on Windows.
+  def windows_net_share(share_name, path)
+    # Add the vagrant user if it does not exist.
+    smb_username = $vconfig['synced_folders']['smb_username']
+    smb_password = $vconfig['synced_folders']['smb_password']
+    
+    command_user = "net user #{smb_username} || net user #{smb_username} #{smb_password} /add"
+    @ui.info "Adding vagrant user"
+    windows_elevated_shell command_user
+
+    # Add the SMB share if it does not exist.
+    command_share = "net share #{share_name} || net share #{share_name}=#{path} /grant:#{smb_username},FULL"
+    @ui.info "Adding vagrant SMB share"
+    windows_elevated_shell command_share
+
+    # Set folder permissions.
+    command_permissions = "icacls #{path} /grant #{smb_username}:(OI)(CI)M"
+    @ui.info "Setting folder permissions"
+    windows_elevated_shell command_permissions
+  end
+
+  # Method to remove the user and SMB network share on Windows.
+  def windows_net_share_remove(share_name)
+    smb_username = $vconfig['synced_folders']['smb_username']
+
+    command_user = "net user #{smb_username} /delete || echo 'User #{smb_username} does not exist' && timeout 10"
+    windows_elevated_shell command_user
+
+    command_share = "net share #{share_name} /delete || echo 'Share #{share_name} does not exist' && timeout 10"
+    windows_elevated_shell command_share
   end
 else
   # Determine if Vagrant was launched with sudo (as root).
@@ -76,11 +118,21 @@ Vagrant.configure("2") do |config|
       type: "smb",
       smb_username: synced_folders['smb_username'],
       smb_password: synced_folders['smb_password']
-  # smb2: experimental, does not require running vagrant as admin, requires initial manual setup.
+  # smb2: experimental, does not require running vagrant as admin.
   elsif synced_folders['type'] == "smb2" && is_windows
-    # Create the share on the Windows host
-    #windows_net_share vagrant_share, vagrant_root
-    #Mount the share in boot2docker
+    # Create the share before 'up'.
+    config.trigger.before :up, :stdout => true, :force => true do
+      info 'Setting up SMB user and share'
+      windows_net_share vagrant_folder_name, vagrant_root
+    end
+    
+    # Remove the share after 'halt'.
+    config.trigger.after :destroy, :stdout => true, :force => true do
+      info 'Removing SMB user and share'
+      windows_net_share_remove vagrant_folder_name
+    end
+
+    # Mount the share in boot2docker.
     config.vm.provision "shell", run: "always" do |s|
       s.inline = <<-SCRIPT
         mkdir -p vagrant $2
