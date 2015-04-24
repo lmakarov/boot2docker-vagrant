@@ -14,8 +14,8 @@ end
 
 # Determine paths.
 vagrant_root = File.dirname(__FILE__)  # Vagrantfile location
-vagrant_mount_point = vagrant_root.gsub(/[a-zA-Z]:/, '')  # Trim Windows drive letters
-vagrant_folder_name = File.basename(vagrant_root)  # Folder name only. Used as the SMB share name 
+vagrant_mount_point = vagrant_root.gsub(/[a-zA-Z]:/, '')  # Trim Windows drive letters.
+vagrant_folder_name = File.basename(vagrant_root)  # Folder name only. Used as the SMB share name.
 
 # Use vagrant.yml for local VM configuration overrides.
 require 'yaml'
@@ -24,11 +24,11 @@ if !File.exist?(vagrant_root + '/vagrant.yml')
 end
 $vconfig = YAML::load_file(vagrant_root + '/vagrant.yml')
 
-# Determine if we are on Windows host or not
+# Determine if we are on Windows host or not.
 is_windows = Vagrant::Util::Platform.windows?
 if is_windows
   require 'win32ole'
-  # Determine if Vagrant was launched from the elevated command prompt
+  # Determine if Vagrant was launched from the elevated command prompt.
   running_as_admin = ((`reg query HKU\\S-1-5-19 2>&1` =~ /ERROR/).nil? && is_windows)
   
   # Run command in an elevated shell.
@@ -177,7 +177,7 @@ Vagrant.configure("2") do |config|
 
   ## Provisioning scripts ##
 
-  # Allow Mac OS X docker client to connect to Docker without TLS auth
+  # Allow Mac OS X docker client to connect to Docker without TLS auth.
   # https://github.com/deis/deis/issues/2230#issuecomment-72701992
   config.vm.provision "shell" do |s|
     s.inline = <<-SCRIPT
@@ -218,7 +218,7 @@ Vagrant.configure("2") do |config|
     s.args = "#{vagrant_mount_point}"
   end
   
-  # dsh script lookup wrapper (Drude Shell)
+  # dsh script lookup wrapper (Drude Shell).
   # https://github.com/blinkreaction/drude
   config.vm.provision "shell", run: "always" do |s|
     s.inline = <<-SCRIPT
