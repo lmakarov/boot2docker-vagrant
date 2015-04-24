@@ -21,6 +21,7 @@ vagrant_folder_name = File.basename(vagrant_root)  # Folder name only. Used as t
 require 'yaml'
 if !File.exist?(vagrant_root + '/vagrant.yml')
   @ui.error 'Configuration file not found! Please copy vagrant.yml.dist to vagrant.yml and try again.'
+  exit
 end
 $vconfig = YAML::load_file(vagrant_root + '/vagrant.yml')
 
@@ -78,7 +79,8 @@ end
 # Vagrant should NOT be run as root/admin.
 if running_as_root
 # || running_as_admin
-  raise "Vagrant should be run as a regular user to avoid issues."
+  @ui.error "Vagrant should be run as a regular user to avoid issues."
+  exit
 end
 
 ######################################################################
