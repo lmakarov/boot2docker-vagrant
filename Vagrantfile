@@ -11,7 +11,7 @@ require 'yaml'
 if !File.exist?(vagrant_root + '/vagrant.yml')
   @ui.error 'Configuration file not found! Please copy vagrant.yml.dist to vagrant.yml and try again.'
 end
-vconfig = YAML::load_file(vagrant_root + '/vagrant.yml')
+$vconfig = YAML::load_file(vagrant_root + '/vagrant.yml')
 
 # Determine if we are on Windows host or not
 is_windows = Vagrant::Util::Platform.windows?
@@ -55,14 +55,14 @@ Vagrant.configure("2") do |config|
 
   # The default box private network IP is 192.168.10.10
   # Configure additional IP addresses in vagrant.yml
-  vconfig['hosts'].each do |host|
+  $vconfig['hosts'].each do |host|
     config.vm.network "private_network", ip: host['ip']
-  end unless vconfig['hosts'].nil?
+  end unless $vconfig['hosts'].nil?
 
  ####################################################################
  ## Synced folders configuration ##
 
-  synced_folders = vconfig['synced_folders']
+  synced_folders = $vconfig['synced_folders']
   # nfs: better performance on Mac
   if synced_folders['type'] == "nfs"  && !is_windows
     config.vm.synced_folder vagrant_root, vagrant_mount_point,
@@ -86,7 +86,7 @@ Vagrant.configure("2") do |config|
         mkdir -p vagrant $2
         mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,sec=ntlm,username=$3,pass=$4 //192.168.10.1/$1 $2
       SCRIPT
-      s.args = "#{vagrant_folder_name} #{vagrant_mount_point} #{vconfig['synced_folders']['smb_username']} #{vconfig['synced_folders']['smb_password']}"
+      s.args = "#{vagrant_folder_name} #{vagrant_mount_point} #{$vconfig['synced_folders']['smb_username']} #{$vconfig['synced_folders']['smb_password']}"
     end  
   # rsync: the best performance, cross-platform platform, one-way only. Run `vagrant rsync-auto` to start auto sync.
   elsif synced_folders['type'] == "rsync"
@@ -114,13 +114,13 @@ Vagrant.configure("2") do |config|
 
   ######################################################################
 
-  ## VirtualBox VM settings
+  ## VirtualBox VM settings.
   
   config.vm.provider "virtualbox" do |v|
-    v.gui = vconfig['v.gui']  # Set to true for debugging. Will unhide VM's primary console screen.
-    v.name = vagrant_folder_name + "_boot2docker"  # VirtualBox VM name
-    v.cpus = vconfig['v.cpus']  # CPU settings. VirtualBox works much better with a single CPU.
-    v.memory = vconfig['v.memory']  # Memory settings.
+    v.gui = $vconfig['v.gui']  # Set to true for debugging. Will unhide VM's primary console screen.
+    v.name = vagrant_folder_name + "_boot2docker"  # VirtualBox VM name.
+    v.cpus = $vconfig['v.cpus']  # CPU settings. VirtualBox works much better with a single CPU.
+    v.memory = $vconfig['v.memory']  # Memory settings.
   end
 
   ## Provisioning scripts ##
@@ -199,7 +199,7 @@ Vagrant.configure("2") do |config|
 
   # Automatically start containers if docker-compose.yml is present in the current directory.
   # See "autostart" property in vagrant.yml.
-  if File.file?('./docker-compose.yml') && vconfig['compose_autostart']
+  if File.file?('./docker-compose.yml') && $vconfig['compose_autostart']
     config.vm.provision "shell", run: "always", privileged: false do |s|
       s.inline = <<-SCRIPT
         cd $1
