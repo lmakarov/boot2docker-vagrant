@@ -56,6 +56,10 @@ The best balance between performance and convenience can be achieved with NFS on
 
 Additional steps are required to get SMB or rsync to work on Windows. [See below](#synced-folders-win).
 
+In addition to the stock SMB synced folders option this box provides an experimental one: [SMB2](#synced-folders-smb2).  
+With the **SMB2** option you will receive several "elevated command prompt" prompts which you accept.  
+No need to enter usernames and passwords unlike the stock SMB option Vagrant ships with.
+
 <a name="synced-folders-mac"></a>
 ### Mac
 
@@ -87,11 +91,13 @@ To use the SMB synced folder type:
 
 While using SMB you have to control Vagrant from an elevated (run as admin) Git Bash shell.
 
+<a name="synced-folders-smb2"></a>
 **SMB2 (experimental option)**
 
 This is an experimental option.  
-Compared to `smb`, `smb2` does not require running vagrant as admin.  
-With this option Vagrant will automatically create a user, SMB share and mount it.
+Compared to **SMB**, **SMB2** does not require running vagrant as admin and does not prompt for username and password.  
+You will receive several "elevated command prompt" prompts which you accept. 
+Vagrant will automatically create a user, set correct file permissions, create the SMB share, and mount it.  
 
 **Enabling rsync**
 
