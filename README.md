@@ -2,7 +2,7 @@
 Boot2docker Vagrant box for optimized Docker and Docker Compose use on Mac and Windows.
 
 ## What is this?
-This is a temporary solution to achive better performance with synced folders and docker data volumes on Mac and Windows.  
+This is a temporary solution to achieve better performance with synced folders and docker data volumes on Mac and Windows.  
 The stock boot2docker currently mounts host volumes via the default VirtualBox Guest Additions (vboxfs) mode, which is terribly slow. Much better performance can be achieved with NFS, SMB or rsync.
 
 <a name="requirements"></a>
@@ -52,6 +52,9 @@ This box supports all [Synced Folder](http://docs.vagrantup.com/v2/synced-folder
 - rsync - best performance, cross-platform, one-way only
 
 Follow the instructions in the `vagrant.yml` file to switch between different sync options.
+If you use rsync, you'll have to run `vagrant rsync-auto` in a separate terminal
+to keep the files in sync as you make changes.
+
 The best balance between performance and convenience can be achieved with NFS on Mac (default) and SMB on Windows (not default).
 
 Additional steps are required to get SMB or rsync to work on Windows. [See below](#synced-folders-win).
@@ -111,6 +114,7 @@ To use rsync on Windows:
 2. Choose `rsync` as the sync type in the `vagrant.yml` file.
 3. Provide an explicit list of folders to sync in the `vagrant.yml` file (`folders` sequence).
 4. Reload the VM: `vagrant reload`
+5. Run `vagrant rsync-auto` to keep the files in sync as you make changes.
 
 <a name="vm-settings"></a>
 ## VirtualBox VM settings
