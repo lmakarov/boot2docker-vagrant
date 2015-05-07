@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.12.0 (2015-05-07)
+
+- Use our own vagrant box - [blinkreaction/boot2docker](https://vagrantcloud.com/blinkreaction/boxes/boot2docker)
+  - Updated Docker to v1.6.0
+  - Updated Docker Compose to v1.2.0
+- [SMB2 (experimental)] sync folder option for Windows - complete automation of SMB sharing setup.
+- Automatically start containers if docker-compose.yml is present in the Vagrantfile directory (single project mode)
+- Miscellaneous code cleanup
+
 ## 0.11.1 (2015-04-09)
 
 - Hotfix: added check for empty hosts in vagrant.yml
