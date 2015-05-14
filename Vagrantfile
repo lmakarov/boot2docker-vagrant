@@ -31,7 +31,7 @@ if is_windows
   require 'win32ole'
   # Determine if Vagrant was launched from the elevated command prompt.
   running_as_admin = ((`reg query HKU\\S-1-5-19 2>&1` =~ /ERROR/).nil? && is_windows)
-  
+
   # Run command in an elevated shell.
   def windows_elevated_shell(args)
     command = 'cmd.exe'
@@ -45,7 +45,7 @@ if is_windows
     # Add the vagrant user if it does not exist.
     smb_username = $vconfig['synced_folders']['smb_username']
     smb_password = $vconfig['synced_folders']['smb_password']
-    
+
     command_user = "net user #{smb_username} || net user #{smb_username} #{smb_password} /add"
     @ui.info "Adding vagrant user"
     windows_elevated_shell command_user
@@ -106,28 +106,31 @@ Vagrant.configure("2") do |config|
  ####################################################################
  ## Synced folders configuration ##
 
+  # Start by disabling the default /vagrant mount
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
   synced_folders = $vconfig['synced_folders']
   # nfs: better performance on Mac
-  if synced_folders['type'] == "nfs"  && !is_windows
+  if synced_folders['default_mount_type'] == "nfs"  && !is_windows
     config.vm.synced_folder vagrant_root, vagrant_mount_point,
       type: "nfs",
       mount_options: ["nolock", "vers=3", "tcp"]
     config.nfs.map_uid = Process.uid
     config.nfs.map_gid = Process.gid
   # smb: better performance on Windows. Requires Vagrant to be run with admin privileges.
-  elsif synced_folders['type'] == "smb" && is_windows
+  elsif synced_folders['default_mount_type'] == "smb" && is_windows
     config.vm.synced_folder vagrant_root, vagrant_mount_point,
       type: "smb",
       smb_username: synced_folders['smb_username'],
       smb_password: synced_folders['smb_password']
   # smb2: experimental, does not require running vagrant as admin.
-  elsif synced_folders['type'] == "smb2" && is_windows
+  elsif synced_folders['default_mount_type'] == "smb2" && is_windows
     # Create the share before 'up'.
     config.trigger.before :up, :stdout => true, :force => true do
       info 'Setting up SMB user and share'
       windows_net_share vagrant_folder_name, vagrant_root
     end
-    
+
     # Remove the share after 'halt'.
     config.trigger.after :destroy, :stdout => true, :force => true do
       info 'Removing SMB user and share'
@@ -141,14 +144,14 @@ Vagrant.configure("2") do |config|
         mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,sec=ntlm,username=$3,pass=$4 //192.168.10.1/$1 $2
       SCRIPT
       s.args = "#{vagrant_folder_name} #{vagrant_mount_point} #{$vconfig['synced_folders']['smb_username']} #{$vconfig['synced_folders']['smb_password']}"
-    end  
+    end
   # rsync: the best performance, cross-platform platform, one-way only. Run `vagrant rsync-auto` to start auto sync.
-  elsif synced_folders['type'] == "rsync"
+  elsif synced_folders['default_mount_type'] == "rsync"
     # Only sync explicitly listed folders.
-    if (synced_folders['folders']).nil?
+    if (synced_folders['rsycn_folders']).nil?
       @ui.warn "WARNING: 'folders' list cannot be empty when using 'rsync' sync type. Please check your vagrant.yml file."
     else
-      for synced_folder in synced_folders['folders'] do
+      for synced_folder in synced_folders['rsync_folders'] do
         config.vm.synced_folder "#{vagrant_root}/#{synced_folder}", "#{vagrant_mount_point}/#{synced_folder}",
           type: "rsync",
           rsync__exclude: ".git/",
@@ -156,9 +159,22 @@ Vagrant.configure("2") do |config|
       end
     end
   # vboxfs: reliable, cross-platform and terribly slow performance
-  else
+  elsif synced_folders['default_mount_type'] == 'vboxfs'
     @ui.warn "WARNING: defaulting to the slowest folder sync option (vboxfs)"
       config.vm.synced_folder vagrant_root, vagrant_mount_point
+  end
+
+  unless synced_folders['individual_mounts'].nil?
+    for synced_folder in synced_folders['individual_mounts'] do
+      if synced_folder['type'] == 'vboxfs'
+        config.vm.synced_folder synced_folder['location'], synced_folder['mount'],
+          mount_options: [synced_folder['options']]
+      elsif synced_folder['type'] == 'nfs'
+        config.vm.synced_folder synced_folder['location'], synced_folder['mount'],
+          type: "nfs",
+          mount_options: [synced_folder['options']]
+      end
+    end
   end
 
   # Make host SSH keys available to containers on /.ssh
@@ -169,7 +185,7 @@ Vagrant.configure("2") do |config|
   ######################################################################
 
   ## VirtualBox VM settings.
-  
+
   config.vm.provider "virtualbox" do |v|
     v.gui = $vconfig['v.gui']  # Set to true for debugging. Will unhide VM's primary console screen.
     v.name = vagrant_folder_name + "_boot2docker"  # VirtualBox VM name.
@@ -197,7 +213,7 @@ Vagrant.configure("2") do |config|
 
       # Check if we are in an interactive shell and use "-it" flags if so.
       interactive=$([ -t 0 ] && echo "-it")
-      
+
       # Run docker-compose in a container
       docker run --rm $interactive \
         -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock \
@@ -212,14 +228,16 @@ Vagrant.configure("2") do |config|
   end
 
   # Pass vagrant_root variable to the VM and cd into the directory upon login.
-  config.vm.provision "shell", run: "always" do |s|
-    s.inline = <<-SCRIPT
-      echo "export VAGRANT_ROOT=$1" >> /home/docker/.profile
-      echo "cd $1" >> /home/docker/.ashrc
-    SCRIPT
-    s.args = "#{vagrant_mount_point}"
+  unless synced_folders['default_mount_type'].nil?
+    config.vm.provision "shell", run: "always" do |s|
+      s.inline = <<-SCRIPT
+        echo "export VAGRANT_ROOT=$1" >> /home/docker/.profile
+        echo "cd $1" >> /home/docker/.ashrc
+      SCRIPT
+      s.args = "#{vagrant_mount_point}"
+    end
   end
-  
+
   # dsh script lookup wrapper (Drude Shell).
   # https://github.com/blinkreaction/drude
   config.vm.provision "shell", run: "always" do |s|
@@ -231,7 +249,7 @@ Vagrant.configure("2") do |config|
       pathup="./"
       slashes=$(pwd | sed "s/[^\/]//g")
       found=1
-      for i in $(seq 0 ${#slashes}) ; do 
+      for i in $(seq 0 ${#slashes}) ; do
         if [ -d "${pathup}.docker" ] ; then
           found=0
           break
