@@ -40,7 +40,7 @@ curl -sO https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/mas
 
 # Download and renaming vagrant.yml.dist
 echo -e "${green}Downloading and renaming vagrant.yml.dist into the current directory...${NC}"
-curl https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/vagrant.yml.dist > vagrant.yml
+curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/vagrant.yml.dist > vagrant.yml
 
 # Start the boot2docker VM
 echo -e "${green}Starting the boot2docker VM...${NC}"
