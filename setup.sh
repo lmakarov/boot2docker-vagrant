@@ -60,6 +60,7 @@ if [[ $SOURCE_FILE ]]; then
 	if [[ $? -ne 0 ]]; then
 		echo -e "${green}Adding automatic DOCKER_HOST export to $HOME/$SOURCE_FILE${NC}"
 		echo -e $DOCKER_HOST_EXPORT >> $HOME/$SOURCE_FILE
+		source $HOME/$SOURCE_FILE
 	fi
 else
 	echo -e "${red}Cannot detect your shell. Please manually add the following to your respective .rc or .profile file:${NC}"
@@ -70,5 +71,5 @@ fi
 echo -e "${green}Checking that everything is in place...${NC}"
 docker version
 if [[ $? -ne 0 ]]; then
-	echo -e "${red}Something went wrong. Please review console output for possible clues."
+	echo -e "${red}Something went wrong. Please review console output for possible clues.${NC}"
 fi
