@@ -6,44 +6,55 @@ This is a temporary solution to achive better performance with synced folders an
 The stock boot2docker currently mounts host volumes via the default VirtualBox Guest Additions (vboxfs) mode, which is terribly slow. Much better performance can be achieved with NFS, SMB or rsync.
 
 <a name="requirements"></a>
-## Requirements
+## Prerequisites
 1. [VirtualBox](https://www.virtualbox.org/) 4.3.20+
 2. [Vagrant](https://www.vagrantup.com/) 1.6.3+
 3. [Git](http://git-scm.com/)
 
+### Automatic installation of prerequisites
+
+**Mac**
+
+On Mac prerequisites are installed using **brew/cask** (brew and cask will be installed if missing).
+
+    curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/presetup-mac.sh | bash
+
+**Windows**
+
+On Windows prerequisites are installed using **chocolatey** (chocolatey will be installed if missing).
+
+1. Run Command Prompt as administrator
+2. Copy and and paste there the code from [presetup-win.cmd](https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/presetup-win.cmd)
+
 <a name="setup"></a>
 ## Setup and usage
 
-### Automatic installation (Mac only)
+### Automatic installation (Mac and Windows)
 
-The following tools will be installed: brew, cask, virtualbox, vagrant, docker, docker-compose.
-In case you already have some of these installed (virtualbox, vagrant), it may be best (though not required) to either follow the manual install process or uninstall them before proceeding.
+**On Windows** Git Bash is the recommended option to run console commands.
+If you are having any issues, please check if they can be reproduced in Git Bash.
 
 Run the following command within your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory:
 
     curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/setup.sh | bash
 
-### Manual installation (Windows)
-
-**On Windows** Git Bash is the recommended option to run console commands.
-If you are having any issues, please check if they can be reproduced in Git Bash.
+### Manual installation (Mac and Windows)
 
 1. Copy `Vagrantfile` and `vagrant.yml.dist` files from this repo into your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory.
 2. Rename `vagrant.yml.dist` to `vagrant.yml`
-3. Launch Git Bash
-4. cd to `</path/to/project>`, start the VM and log into it
+3. Launch Terminal (Mac) or Git Bash (Windows)
+4. cd to `</path/to/project>`, start the VM
 
     ```
     cd </path/to/project>
     vagrant up
-    vagrant ssh
     ```
 
-5. Verify installation (you are in the boot2docker VM at this point)
+5. Verify installation
     
     ```
     docker version
-    docker-compose --version
+    vagrant ssh -c 'docker-compose --version'
     ```
 
 <a name="synced-folders"></a>
