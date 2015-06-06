@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.1 (2015-06-06)
+
+- Minor fixes in the setup.sh script for Mac
+
 ## 0.12.0 (2015-05-07)
 
 - Use our own vagrant box - [blinkreaction/boot2docker](https://vagrantcloud.com/blinkreaction/boxes/boot2docker)
