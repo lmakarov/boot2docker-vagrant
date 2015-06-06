@@ -15,9 +15,13 @@ The stock boot2docker currently mounts host volumes via the default VirtualBox G
 ## Setup and usage
 
 ### Automatic installation (Mac only)
-This installs the following prerequisites and dependencies: brew, cask, virtualbox, vagrant, docker, docker-compose
 
-    curl https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/setup.sh | bash
+The following tools will be installed: brew, cask, virtualbox, vagrant, docker, docker-compose.
+In case you already have some of these installed (virtualbox, vagrant), it may be best (though not required) to either follow the manual install process or uninstall them before proceeding.
+
+Run the following command within your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory:
+
+    curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/setup.sh | bash
 
 ### Manual installation (Windows)
 

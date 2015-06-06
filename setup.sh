@@ -40,7 +40,7 @@ curl -sO https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/mas
 
 # Download and renaming vagrant.yml.dist
 echo -e "${green}Downloading and renaming vagrant.yml.dist into the current directory...${NC}"
-curl https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/vagrant.yml.dist > vagrant.yml
+curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/vagrant.yml.dist > vagrant.yml
 
 # Start the boot2docker VM
 echo -e "${green}Starting the boot2docker VM...${NC}"
@@ -61,6 +61,8 @@ if [[ $SOURCE_FILE ]]; then
 		echo -e "${green}Adding automatic DOCKER_HOST export to $HOME/$SOURCE_FILE${NC}"
 		echo -e $DOCKER_HOST_EXPORT >> $HOME/$SOURCE_FILE
 	fi
+	# Source the file so we can use the DOCKER_HOST variabel right away.
+	source $HOME/$SOURCE_FILE
 else
 	echo -e "${red}Cannot detect your shell. Please manually add the following to your respective .rc or .profile file:${NC}"
 	echo -e "$DOCKER_HOST_EXPORT"
@@ -70,5 +72,5 @@ fi
 echo -e "${green}Checking that everything is in place...${NC}"
 docker version
 if [[ $? -ne 0 ]]; then
-	echo -e "${red}Something went wrong. Please review console output for possible clues."
+	echo -e "${red}Something went wrong. Please review console output for possible clues.${NC}"
 fi
