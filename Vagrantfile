@@ -256,6 +256,7 @@ Vagrant.configure("2") do |config|
   if File.file?('./docker-compose.yml') && $vconfig['compose_autostart']
     config.vm.provision "shell", run: "always", privileged: false do |s|
       s.inline = <<-SCRIPT
+        echo "Found docker-compose.yml in the root folder. Starting containers..."
         cd $1
         docker-compose up -d
       SCRIPT
