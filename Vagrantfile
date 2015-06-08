@@ -189,6 +189,14 @@ Vagrant.configure("2") do |config|
     SCRIPT
   end
 
+  # Install bash for compatibility with "#!/bin/bash" scripts.
+  config.vm.provision "shell", run: "always", privileged: false do |s|
+    s.inline = <<-SCRIPT
+      echo 'Installing bash...'
+      tce-load -wi bash.tcz > /dev/null 2>&1
+    SCRIPT
+  end
+
   # Make docker-compose available inside boot2docker via a container.
   # https://github.com/docker/compose/issues/598#issuecomment-67762456
   config.vm.provision "shell", run: "always" do |s|
