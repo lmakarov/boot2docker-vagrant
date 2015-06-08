@@ -183,6 +183,7 @@ Vagrant.configure("2") do |config|
   # https://github.com/deis/deis/issues/2230#issuecomment-72701992
   config.vm.provision "shell" do |s|
     s.inline = <<-SCRIPT
+      echo 'Disabling DOCKER_TLS...'
       echo 'DOCKER_TLS=no' >> /var/lib/boot2docker/profile
       /etc/init.d/docker restart
     SCRIPT
@@ -192,6 +193,8 @@ Vagrant.configure("2") do |config|
   # https://github.com/docker/compose/issues/598#issuecomment-67762456
   config.vm.provision "shell", run: "always" do |s|
     s.inline = <<-SCRIPT
+      echo 'Making docker-compose available inside boot2docker...'
+
       DC_SCRIPT='
       #/bin/sh
 
