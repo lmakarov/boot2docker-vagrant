@@ -99,8 +99,9 @@ Vagrant.configure("2") do |config|
 
   # The default box private network IP is 192.168.10.10
   # Configure additional IP addresses in vagrant.yml
+  # Using Intel PRO/1000 MT Server [82545EM] network adapter - shows slightly better performance compared to "virtio".
   $vconfig['hosts'].each do |host|
-    config.vm.network "private_network", ip: host['ip']
+    config.vm.network "private_network", ip: host['ip'], nic_type: "82545EM"
   end unless $vconfig['hosts'].nil?
 
  ####################################################################
@@ -175,6 +176,11 @@ Vagrant.configure("2") do |config|
     v.name = vagrant_folder_name + "_boot2docker"  # VirtualBox VM name.
     v.cpus = $vconfig['v.cpus']  # CPU settings. VirtualBox works much better with a single CPU.
     v.memory = $vconfig['v.memory']  # Memory settings.
+    
+    # Switch the base box NAT network adapters from "82545EM" to "virtio".
+    # Default Intel adapters do not work well with docker...
+    # See https://github.com/blinkreaction/boot2docker-vagrant/issues/13 for details.
+    v.customize ["modifyvm", :id, "--nictype1", "virtio"]
   end
 
   ## Provisioning scripts ##
