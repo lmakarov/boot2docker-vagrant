@@ -268,6 +268,19 @@ Vagrant.configure("2") do |config|
     SCRIPT
   end
 
+  # Start system-wide services.
+  # vhost-proxy: https://github.com/jwilder/nginx-proxy
+  # Containers must define a "VIRTUAL_HOST" environment variable to be recognized and routed by the vhost-proxy.
+  if $vconfig['vhost_proxy']
+    config.vm.provision "shell", run: "always", privileged: false do |s|
+      s.inline = <<-SCRIPT
+        echo "Starting system-wide HTTP reverse proxy bound to 192.168.10.10:80... "
+        docker rm -f vhost-proxy > /dev/null 2>&1 || true
+        docker run -d --name vhost-proxy -p 192.168.10.10:80:80 -p 192.168.10.10:443:443 -v /var/run/docker.sock:/tmp/docker.sock jwilder/nginx-proxy > /dev/null
+      SCRIPT
+    end
+  end
+
   # Automatically start containers if docker-compose.yml is present in the current directory.
   # See "autostart" property in vagrant.yml.
   if File.file?('./docker-compose.yml') && $vconfig['compose_autostart']
