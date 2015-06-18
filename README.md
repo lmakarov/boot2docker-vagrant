@@ -2,48 +2,60 @@
 Boot2docker Vagrant box for optimized Docker and Docker Compose use on Mac and Windows.
 
 ## What is this?
-This is a temporary solution to achive better performance with synced folders and docker data volumes on Mac and Windows.  
+This is a temporary solution to achieve better performance with synced folders and docker data volumes on Mac and Windows.  
 The stock boot2docker currently mounts host volumes via the default VirtualBox Guest Additions (vboxfs) mode, which is terribly slow. Much better performance can be achieved with NFS, SMB or rsync.
 
 <a name="requirements"></a>
-## Requirements
+## Prerequisites
 1. [VirtualBox](https://www.virtualbox.org/) 4.3.20+
 2. [Vagrant](https://www.vagrantup.com/) 1.6.3+
 3. [Git](http://git-scm.com/)
 
+Proceed to [Setup and usage](#setup) if you already have all prerequisites installed or prefer to install some/all manually.  
+Automatic installation of prerequisites is available via the following one-liners.
+
+**Mac**
+
+On Mac prerequisites are installed using **brew/cask** (brew and cask will be installed if missing).
+
+    curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/presetup-mac.sh | bash
+
+**Windows**
+
+On Windows prerequisites are installed using **chocolatey** (chocolatey will be installed if missing).
+
+1. Run Command Prompt as administrator
+2. Copy and and paste there the code from [presetup-win.cmd](https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/presetup-win.cmd)
+
 <a name="setup"></a>
 ## Setup and usage
 
-### Automatic installation (Mac only)
+### Automatic installation (Mac and Windows)
 
-The following tools will be installed: brew, cask, virtualbox, vagrant, docker, docker-compose.
-In case you already have some of these installed (virtualbox, vagrant), it may be best (though not required) to either follow the manual install process or uninstall them before proceeding.
+**On Windows** Git Bash is the recommended option to run console commands.
+If you are having any issues, please check if they can be reproduced in Git Bash.
 
 Run the following command within your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory:
 
     curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/setup.sh | bash
 
-### Manual installation (Windows)
-
-**On Windows** Git Bash is the recommended option to run console commands.
-If you are having any issues, please check if they can be reproduced in Git Bash.
+### Manual installation (Mac and Windows)
 
 1. Copy `Vagrantfile` and `vagrant.yml.dist` files from this repo into your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory.
 2. Rename `vagrant.yml.dist` to `vagrant.yml`
-3. Launch Git Bash
-4. cd to `</path/to/project>`, start the VM and log into it
+3. Launch Terminal (Mac) or Git Bash (Windows)
+4. cd to `</path/to/project>`, start the VM
 
     ```
     cd </path/to/project>
     vagrant up
-    vagrant ssh
     ```
 
-5. Verify installation (you are in the boot2docker VM at this point)
+5. Verify installation
     
     ```
     docker version
-    docker-compose --version
+    vagrant ssh -c 'docker-compose --version'
     ```
 
 <a name="synced-folders"></a>
@@ -63,6 +75,8 @@ Additional steps are required to get SMB or rsync to work on Windows. [See below
 In addition to the stock SMB synced folders option this box provides an experimental one: [SMB2](#synced-folders-smb2).  
 With the **SMB2** option you will receive several "elevated command prompt" prompts which you accept.  
 No need to enter usernames and passwords unlike the stock SMB option Vagrant ships with.
+
+If you use rsync, you'll have to run `vagrant rsync-auto` in a separate terminal to keep the files in sync as you make changes.
 
 <a name="synced-folders-mac"></a>
 ### Mac
@@ -115,6 +129,7 @@ To use rsync on Windows:
 2. Choose `rsync` as the sync type in the `vagrant.yml` file.
 3. Provide an explicit list of folders to sync in the `vagrant.yml` file (`folders` sequence).
 4. Reload the VM: `vagrant reload`
+5. Run `vagrant rsync-auto` to keep the files in sync as you make changes.
 
 <a name="vm-settings"></a>
 ## VirtualBox VM settings
@@ -141,6 +156,45 @@ hosts:
 ```
 
 Project specific `<IP>:<port>` mapping for containers is done in via docker-compose in `docker-compose.yml`
+
+# vhost-proxy
+
+As an alternative to using dedicated IPs for different projects a built-in vhost-proxy container can be used.  
+It binds to `192.168.10.10:80` (the default box IP address) and routes web requests based on the `Host` header.
+
+### How to use
+- Set `vhost_proxy: true` in your vagrant.yml file and do a 'vagrant reload'
+- Set the `VIRTUAL_HOST` environment variable for the web container in your setup (e.g. `VIRTUAL_HOST=example.com`)
+- Add an entry in your hosts file (e.g. `/etc/hosts`) to point the domain to the default box IP (`192.168.10.10`)
+
+Example docker run
+
+```
+docker run --name nginx -d -e "VIRTUAL_HOST=example.com" nginx:latest
+```
+
+Example docker-compose.yml entry
+
+```
+# Web node
+web:
+  image: nginx:latest
+  ports:
+    - "80"
+  environment:
+    - VIRTUAL_HOST=example.com
+```
+
+Example hosts file entry
+
+```
+192.168.10.10  example.com
+```
+
+It is completely fine to use both the vhost-proxy approach and the dedicated IPs approach concurently:
+ - `"80"` - expose port "80", docker will randomly pick an available port on the Docker Host
+ - `"192.168.10.11:80:80"` - dedicated IP:port mapping
+
 
 ## Tips
 

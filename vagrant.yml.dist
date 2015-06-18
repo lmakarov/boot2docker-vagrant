@@ -14,6 +14,7 @@ synced_folders:
     smb_password: 'vagrant'
     # List of folders to sync with rsync. These should be subfolder names within the <Projects> folder (e.g. "drupal7")
     # Uncomment and add folders per the example below as neccessary.
+    # Note: you'll have to run `vagrant rsync-auto` in the background to keep the files in sync as you make changes
     folders:
       #- "projectA"  # rsync projectA folder
       #- "projectB"  # rsync projectB folder
@@ -35,3 +36,10 @@ hosts:
 
 # Automatically start containers if docker-compose.yml is present in the current directory (default: false).
 compose_autostart: false
+
+# vhost-proxy
+# https://github.com/jwilder/nginx-proxy
+# Use a reverse proxy to map host name to containers.
+# This is an alternative to using dedicated IP addresses in the 'hosts' section above.
+# Containers must define a "VIRTUAL_HOST" environment variable to be recognized and routed by the vhost-proxy.
+vhost_proxy: false

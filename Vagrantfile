@@ -99,8 +99,9 @@ Vagrant.configure("2") do |config|
 
   # The default box private network IP is 192.168.10.10
   # Configure additional IP addresses in vagrant.yml
+  # Using Intel PRO/1000 MT Server [82545EM] network adapter - shows slightly better performance compared to "virtio".
   $vconfig['hosts'].each do |host|
-    config.vm.network "private_network", ip: host['ip']
+    config.vm.network "private_network", ip: host['ip'], nic_type: "82545EM"
   end unless $vconfig['hosts'].nil?
 
  ####################################################################
@@ -175,6 +176,11 @@ Vagrant.configure("2") do |config|
     v.name = vagrant_folder_name + "_boot2docker"  # VirtualBox VM name.
     v.cpus = $vconfig['v.cpus']  # CPU settings. VirtualBox works much better with a single CPU.
     v.memory = $vconfig['v.memory']  # Memory settings.
+    
+    # Switch the base box NAT network adapters from "82545EM" to "virtio".
+    # Default Intel adapters do not work well with docker...
+    # See https://github.com/blinkreaction/boot2docker-vagrant/issues/13 for details.
+    v.customize ["modifyvm", :id, "--nictype1", "virtio"]
   end
 
   ## Provisioning scripts ##
@@ -183,8 +189,17 @@ Vagrant.configure("2") do |config|
   # https://github.com/deis/deis/issues/2230#issuecomment-72701992
   config.vm.provision "shell" do |s|
     s.inline = <<-SCRIPT
+      echo 'Disabling DOCKER_TLS...'
       echo 'DOCKER_TLS=no' >> /var/lib/boot2docker/profile
       /etc/init.d/docker restart
+    SCRIPT
+  end
+
+  # Install bash for compatibility with "#!/bin/bash" scripts.
+  config.vm.provision "shell", run: "always", privileged: false do |s|
+    s.inline = <<-SCRIPT
+      echo 'Installing bash...'
+      tce-load -wi bash.tcz > /dev/null 2>&1
     SCRIPT
   end
 
@@ -192,6 +207,8 @@ Vagrant.configure("2") do |config|
   # https://github.com/docker/compose/issues/598#issuecomment-67762456
   config.vm.provision "shell", run: "always" do |s|
     s.inline = <<-SCRIPT
+      echo 'Making docker-compose available inside boot2docker...'
+
       DC_SCRIPT='
       #/bin/sh
 
@@ -251,11 +268,25 @@ Vagrant.configure("2") do |config|
     SCRIPT
   end
 
+  # Start system-wide services.
+  # vhost-proxy: https://github.com/jwilder/nginx-proxy
+  # Containers must define a "VIRTUAL_HOST" environment variable to be recognized and routed by the vhost-proxy.
+  if $vconfig['vhost_proxy']
+    config.vm.provision "shell", run: "always", privileged: false do |s|
+      s.inline = <<-SCRIPT
+        echo "Starting system-wide HTTP reverse proxy bound to 192.168.10.10:80... "
+        docker rm -f vhost-proxy > /dev/null 2>&1 || true
+        docker run -d --name vhost-proxy -p 192.168.10.10:80:80 -p 192.168.10.10:443:443 -v /var/run/docker.sock:/tmp/docker.sock jwilder/nginx-proxy > /dev/null
+      SCRIPT
+    end
+  end
+
   # Automatically start containers if docker-compose.yml is present in the current directory.
   # See "autostart" property in vagrant.yml.
   if File.file?('./docker-compose.yml') && $vconfig['compose_autostart']
     config.vm.provision "shell", run: "always", privileged: false do |s|
       s.inline = <<-SCRIPT
+        echo "Found docker-compose.yml in the root folder. Starting containers..."
         cd $1
         docker-compose up -d
       SCRIPT
