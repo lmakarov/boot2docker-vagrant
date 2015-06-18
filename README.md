@@ -68,6 +68,9 @@ This box supports all [Synced Folder](http://docs.vagrantup.com/v2/synced-folder
 - rsync - best performance, cross-platform, one-way only
 
 Follow the instructions in the `vagrant.yml` file to switch between different sync options.
+If you use rsync, you'll have to run `vagrant rsync-auto` in a separate terminal
+to keep the files in sync as you make changes.
+
 The best balance between performance and convenience can be achieved with NFS on Mac (default) and SMB on Windows (not default).
 
 Additional steps are required to get SMB or rsync to work on Windows. [See below](#synced-folders-win).
