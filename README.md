@@ -11,7 +11,8 @@ The stock boot2docker currently mounts host volumes via the default VirtualBox G
 2. [Vagrant](https://www.vagrantup.com/) 1.6.3+
 3. [Git](http://git-scm.com/)
 
-### Automatic installation of prerequisites
+Proceed to [Setup and usage](#setup) if you already have all prerequisites installed or prefer to install some/all manually.  
+Automatic installation of prerequisites is available via the following one-liners.
 
 **Mac**
 
@@ -155,6 +156,45 @@ hosts:
 ```
 
 Project specific `<IP>:<port>` mapping for containers is done in via docker-compose in `docker-compose.yml`
+
+# vhost-proxy
+
+As an alternative to using dedicated IPs for different projects a built-in vhost-proxy container can be used.  
+It binds to `192.168.10.10:80` (the default box IP address) and routes web requests based on the `Host` header.
+
+### How to use
+- Set `vhost_proxy: true` in your vagrant.yml file and do a 'vagrant reload'
+- Set the `VIRTUAL_HOST` environment variable for the web container in your setup (e.g. `VIRTUAL_HOST=example.com`)
+- Add an entry in your hosts file (e.g. `/etc/hosts`) to point the domain to the default box IP (`192.168.10.10`)
+
+Example docker run
+
+```
+docker run --name nginx -d -e "VIRTUAL_HOST=example.com" nginx:latest
+```
+
+Example docker-compose.yml entry
+
+```
+# Web node
+web:
+  image: nginx:latest
+  ports:
+    - "80"
+  environment:
+    - VIRTUAL_HOST=example.com
+```
+
+Example hosts file entry
+
+```
+192.168.10.10  example.com
+```
+
+It is completely fine to use both the vhost-proxy approach and the dedicated IPs approach concurently:
+ - `"80"` - expose port "80", docker will randomly pick an available port on the Docker Host
+ - `"192.168.10.11:80:80"` - dedicated IP:port mapping
+
 
 ## Tips
 
