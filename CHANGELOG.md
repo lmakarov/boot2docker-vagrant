@@ -4,7 +4,7 @@
 
 - Split install scripts into two pieces: prerequisites installation (optional) and actual box installation.
 - Automatic installation is now supported on Windows!
-- vhost-proxy service - adds ability to use a single shared IP address for multiple web projects running concurently.
+- vhost-proxy service - adds ability to use a single shared IP address for multiple web projects running concurrently.
 - VirtualBox network adapters performance adjustments (using `virtio` on the NAT interface). Resolves #12.
 - Added bash to avoid shell script compatibility issues and updated all shell scripts to use `#/bin/bash` header. Resolves #17.
 - Documentation updates.
