@@ -269,14 +269,25 @@ Vagrant.configure("2") do |config|
   end
 
   # Start system-wide services.
-  # vhost-proxy: https://github.com/jwilder/nginx-proxy
   # Containers must define a "VIRTUAL_HOST" environment variable to be recognized and routed by the vhost-proxy.
+  #
+  # Wildcard DNS - Mac configuration:
+  # $ sudo mkdir /etc/resolver
+  # $ echo -e "\n# .drude domain resolution\nnameserver 192.168.10.10" | sudo tee -a  /etc/resolver/drude
+  # Check configuration
+  # $ scutil --dns
+  # $ dig myproject.drude
+  #
   if $vconfig['vhost_proxy']
     config.vm.provision "shell", run: "always", privileged: false do |s|
       s.inline = <<-SCRIPT
         echo "Starting system-wide HTTP reverse proxy bound to 192.168.10.10:80... "
         docker rm -f vhost-proxy > /dev/null 2>&1 || true
-        docker run -d --name vhost-proxy -p 192.168.10.10:80:80 -p 192.168.10.10:443:443 -v /var/run/docker.sock:/tmp/docker.sock jwilder/nginx-proxy > /dev/null
+        docker run -d --name vhost-proxy -p 192.168.10.10:80:80 -p 192.168.10.10:443:443 -v /var/run/docker.sock:/tmp/docker.sock lmakarov/nginx-proxy:alpine  > /dev/null
+
+        echo "Starting system-wide DNS service bound to 192.168.10.10:53... "
+        docker rm -f dns > /dev/null 2>&1 || true
+        docker run -d --name dns -p 192.168.10.10:53:53/udp --cap-add=NET_ADMIN andyshinn/dnsmasq -A /drude/192.168.10.10 > /dev/null
       SCRIPT
     end
   end
