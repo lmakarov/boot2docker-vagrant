@@ -181,6 +181,11 @@ Vagrant.configure("2") do |config|
     # Default Intel adapters do not work well with docker...
     # See https://github.com/blinkreaction/boot2docker-vagrant/issues/13 for details.
     v.customize ["modifyvm", :id, "--nictype1", "virtio"]
+
+    # Disable VirtualBox DNS proxy as it may cause issues.
+    # See https://github.com/docker/machine/pull/1069
+    v.customize ['modifyvm', :id, '--natdnshostresolver1', 'off']
+    v.customize ['modifyvm', :id, '--natdnsproxy1', 'off']
   end
 
   ## Provisioning scripts ##
