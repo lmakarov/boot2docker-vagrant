@@ -1,5 +1,8 @@
 #!/bin/bash
 
+DOCKER_VERSION=1.7.0
+DOCKER_COMPOSE_VERSION=1.3.1
+
 # Console colors
 red='\033[0;31m'
 green='\033[0;32m'
@@ -28,8 +31,10 @@ brew cask install vagrant
 
 # Install docker
 echo -e "${green}Installing docker...${NC}"
-brew install docker
+curl -fsL "https://get.docker.com/builds/$(uname -s)/$(uname -m)/docker-$DOCKER_VERSION" -o /usr/local/bin/docker
+chmod +x /usr/local/bin/docker
 
 # Install docker-compose
 echo -e "${green}Installing docker-compose...${NC}"
-brew install docker-compose
+curl -fsL "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
