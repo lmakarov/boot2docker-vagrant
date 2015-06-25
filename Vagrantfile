@@ -92,8 +92,8 @@ Vagrant.configure("2") do |config|
   config.vm.define "boot2docker"
 
   config.vm.box = "blinkreaction/boot2docker"
-  config.vm.box_version = "1.6.0"
-  config.vm.box_check_update = false
+  config.vm.box_version = "1.7.0"
+  config.vm.box_check_update = true
 
   ## Network ##
 
@@ -190,46 +190,11 @@ Vagrant.configure("2") do |config|
 
   ## Provisioning scripts ##
 
-  # Allow Mac OS X docker client to connect to Docker without TLS auth.
-  # https://github.com/deis/deis/issues/2230#issuecomment-72701992
-  config.vm.provision "shell" do |s|
-    s.inline = <<-SCRIPT
-      echo 'Disabling DOCKER_TLS...'
-      echo 'DOCKER_TLS=no' >> /var/lib/boot2docker/profile
-      /etc/init.d/docker restart
-    SCRIPT
-  end
-
   # Install bash for compatibility with "#!/bin/bash" scripts.
   config.vm.provision "shell", run: "always", privileged: false do |s|
     s.inline = <<-SCRIPT
       echo 'Installing bash...'
       tce-load -wi bash.tcz > /dev/null 2>&1
-    SCRIPT
-  end
-
-  # Make docker-compose available inside boot2docker via a container.
-  # https://github.com/docker/compose/issues/598#issuecomment-67762456
-  config.vm.provision "shell", run: "always" do |s|
-    s.inline = <<-SCRIPT
-      echo 'Making docker-compose available inside boot2docker...'
-
-      DC_SCRIPT='
-      #/bin/sh
-
-      # Check if we are in an interactive shell and use "-it" flags if so.
-      interactive=$([ -t 0 ] && echo "-it")
-      
-      # Run docker-compose in a container
-      docker run --rm $interactive \
-        -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock \
-        -e COMPOSE_PROJECT_NAME=$(basename $(pwd)) -w="$(pwd)" \
-        blinkreaction/docker-compose:1.2.0 $*
-      '
-
-      echo "$DC_SCRIPT" > /usr/local/bin/docker-compose
-      chmod +x /usr/local/bin/docker-compose
-      echo 'alias fig=docker-compose' >> /home/docker/.ashrc
     SCRIPT
   end
 
