@@ -52,8 +52,7 @@ echo -e "${green}Checking that everything is in place...${NC}"
 docker version && vagrant ssh -c 'docker-compose --version'
 if [[ $? -ne 0 ]]; then
 	echo -e "${red}Something went wrong. Please review console output for possible clues.${NC}"
-	return 1
+	exit 1
 else
 	echo -e "${green}Docker Host is up and running. Please restart your shell.${NC}"
-	return 0
 fi
