@@ -10,7 +10,7 @@ NC='\033[0m'
 BRANCH='master'
 if [ ! $BOOT2DOCKER_TEST_ENVIRONMENT == "" ]; then
 	BRANCH=$BOOT2DOCKER_TEST_ENVIRONMENT
-	echo -e "${red}[setup] testing mode: environment = \"${BRANCH}\"$NC"
+	echo -e "${red}[b2d-setup] testing mode: environment = \"${BRANCH}\"$NC"
 fi
 
 # Download Vagrantfile
