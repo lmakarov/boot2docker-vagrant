@@ -194,7 +194,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", run: "always", privileged: false do |s|
     s.inline = <<-SCRIPT
       echo 'Installing bash...'
-      tce-load -wi bash.tcz > /dev/null 2>&1
+      tce-load -wi bash.tcz > /dev/null 2>&1 || true
     SCRIPT
   end
 
