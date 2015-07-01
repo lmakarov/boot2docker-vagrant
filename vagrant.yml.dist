@@ -38,7 +38,6 @@ hosts:
 compose_autostart: false
 
 # vhost-proxy
-# https://github.com/jwilder/nginx-proxy
 # Use a reverse proxy to map host name to containers.
 # This is an alternative to using dedicated IP addresses in the 'hosts' section above.
 # Containers must define a "VIRTUAL_HOST" environment variable to be recognized and routed by the vhost-proxy.

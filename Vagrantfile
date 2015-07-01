@@ -230,11 +230,14 @@ Vagrant.configure("2") do |config|
       s.inline = <<-SCRIPT
         echo "Starting system-wide HTTP reverse proxy bound to 192.168.10.10:80... "
         docker rm -f vhost-proxy > /dev/null 2>&1 || true
-        docker run -d --name vhost-proxy -p 192.168.10.10:80:80 -p 192.168.10.10:443:443 -v /var/run/docker.sock:/tmp/docker.sock lmakarov/nginx-proxy:alpine  > /dev/null
+        docker run -d --name vhost-proxy -p 192.168.10.10:80:80 -p 192.168.10.10:443:443 -v /var/run/docker.sock:/tmp/docker.sock \
+        blinkreaction/nginx-proxy@sha256:54b17e5298e6f6c1d442c3070f9c53f6250898da097f59786e4bfef8e77863df > /dev/null
 
         echo "Starting system-wide DNS service bound to 192.168.10.10:53... "
         docker rm -f dns > /dev/null 2>&1 || true
-        docker run -d --name dns -p 192.168.10.10:53:53/udp --cap-add=NET_ADMIN andyshinn/dnsmasq -A /drude/192.168.10.10 > /dev/null
+        docker run -d --name dns -p 192.168.10.10:53:53/udp --cap-add=NET_ADMIN \
+        andyshinn/dnsmasq@sha256:86f83680aba9876e9822e5b28774026fce087f45c4cf007783c5a31ff5c9a5dd \
+        -A /drude/192.168.10.10 > /dev/null
       SCRIPT
     end
   end
