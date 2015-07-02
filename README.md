@@ -41,7 +41,7 @@ Run the following command within your `<Projects>` (shared boo2docker VM for mul
 
 ### Manual installation (Mac and Windows)
 
-1. Copy `Vagrantfile` and `vagrant.yml.dist` files from this repo into your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory.
+1. Copy `Vagrantfile` and `vagrant.yml` files from this repo into your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory.
 2. Rename `vagrant.yml.dist` to `vagrant.yml`
 3. Launch Terminal (Mac) or Git Bash (Windows)
 4. cd to `</path/to/project>`, start the VM
