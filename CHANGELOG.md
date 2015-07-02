@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.0-rc1 (2015-07-02)
+
+- Upgrade to Docker 1.7.0 base box
+  - moved some provisioning scripts into the base box
+- vhost-proxy service is now enabled by default in vagrant.yml (`vhost_proxy: true`)
+  - switched vhost-proxy container to a lightweight Alpine Linux base image
+- Added dns service to resolve *.drude to VM's primary IP address (`192.168.10.10`)
+- Some adjustments in the networking settings
+- presetup-mac: Install docker and docker-compose directly instead of brew to match the Docker server version
+- Added support to setup scripts to test different branches. E.g. `BOOT2DOCKER_TEST_ENVIRONMENT=develop setup.sh`
+- Updated documentation
+
 ## 0.13.0 (2015-06-18)
 
 - Split install scripts into two pieces: prerequisites installation (optional) and actual box installation.
