@@ -18,7 +18,7 @@ Automatic installation of prerequisites is available via the following one-liner
 
 On Mac prerequisites are installed using **brew/cask** (brew and cask will be installed if missing).
 
-    curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/presetup-mac.sh | bash
+    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/presetup-mac.sh)
 
 **Windows**
 
@@ -37,7 +37,7 @@ If you are having any issues, please check if they can be reproduced in Git Bash
 
 Run the following command within your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory:
 
-    curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/setup.sh | bash
+    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/setup.sh)
 
 ### Manual installation (Mac and Windows)
 
