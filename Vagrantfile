@@ -190,14 +190,6 @@ Vagrant.configure("2") do |config|
 
   ## Provisioning scripts ##
 
-  # Install bash for compatibility with "#!/bin/bash" scripts.
-  config.vm.provision "shell", run: "always", privileged: false do |s|
-    s.inline = <<-SCRIPT
-      echo 'Installing bash...'
-      tce-load -wi bash.tcz > /dev/null 2>&1 || true
-    SCRIPT
-  end
-
   # Pass vagrant_root variable to the VM and cd into the directory upon login.
   config.vm.provision "shell", run: "always" do |s|
     s.inline = <<-SCRIPT
