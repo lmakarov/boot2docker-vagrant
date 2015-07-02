@@ -157,7 +157,8 @@ hosts:
 
 Project specific `<IP>:<port>` mapping for containers is done in via docker-compose in `docker-compose.yml`
 
-# vhost-proxy
+<a name="vhost-proxy"></a>
+## vhost-proxy
 
 As an alternative to using dedicated IPs for different projects a built-in vhost-proxy container can be used.  
 It binds to `192.168.10.10:80` (the default box IP address) and routes web requests based on the `Host` header.
@@ -166,6 +167,7 @@ It binds to `192.168.10.10:80` (the default box IP address) and routes web reque
 - Set `vhost_proxy: true` in your vagrant.yml file and do a 'vagrant reload'
 - Set the `VIRTUAL_HOST` environment variable for the web container in your setup (e.g. `VIRTUAL_HOST=example.com`)
 - Add an entry in your hosts file (e.g. `/etc/hosts`) to point the domain to the default box IP (`192.168.10.10`)
+  - As an alternative see [Wildcard DNS](#dns) instructions below
 
 Example docker run
 
@@ -195,6 +197,25 @@ It is completely fine to use both the vhost-proxy approach and the dedicated IPs
  - `"80"` - expose port "80", docker will randomly pick an available port on the Docker Host
  - `"192.168.10.11:80:80"` - dedicated IP:port mapping
 
+<a name="dns"></a>
+## Wildcard DNS (on Mac)
+
+Enabling the vhost-proxy in [vagrant.yml](vagrant.yml) (`vhost_proxy: true`) will also enable a lightweight dnsmasq container.  
+This container binds to 192.168.10.10:53 and will resolve all `*.drude` DNS requests to `192.168.10.10` (VM's primary IP address), where vhost-proxy listens on port 80.
+
+### Wildcard DNS - Mac configuration
+
+```
+sudo mkdir -p /etc/resolver
+echo -e "\n# .drude domain resolution\nnameserver 192.168.10.10" | sudo tee -a  /etc/resolver/drude
+```
+
+Check configuration
+
+```
+scutil --dns
+dig myproject.drude
+```
 
 ## Tips
 
