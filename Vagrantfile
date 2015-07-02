@@ -199,13 +199,28 @@ Vagrant.configure("2") do |config|
     s.args = "#{vagrant_mount_point}"
   end
   
-  # dsh tool (Drude Shell).
+  # Install dsh tool (Drude Shell) into VM's permanent storage.
   # https://github.com/blinkreaction/drude
-  # config.vm.provision "shell", run: "always" do |s|
-  #   s.inline = <<-SCRIPT
-  #     curl -sfS https://raw.githubusercontent.com/blinkreaction/drude/master/scripts/install-dsh.sh | bash
-  #   SCRIPT
-  # end
+  config.vm.provision "shell" do |s|
+    s.inline = <<-SCRIPT
+      echo "Installing dsh (Drude Shell)..."
+      dsh_script=$(curl -fs https://raw.githubusercontent.com/blinkreaction/drude/develop/bin/dsh)
+      if [ ! $? -eq 0 ]; then
+        echo -e "dsh download failed..."
+      else
+        # Download dsh to the permanent storage
+        sudo mkdir -p /var/lib/boot2docker/bin
+        echo "$dsh_script" | sudo tee /var/lib/boot2docker/bin/dsh >/dev/null
+        sudo chmod +x /var/lib/boot2docker/bin/dsh
+        sudo ln -sf /var/lib/boot2docker/bin/dsh /usr/local/bin/dsh
+
+        # Making the symlink persistent via bootlocal.sh
+        echo '# dsh (Drude Shell)' | sudo tee -a /var/lib/boot2docker/bootlocal.sh > /dev/null
+        echo 'sudo ln -sf /var/lib/boot2docker/bin/dsh /usr/local/bin/dsh' | sudo tee -a /var/lib/boot2docker/bootlocal.sh > /dev/null
+        sudo chmod +x /var/lib/boot2docker/bootlocal.sh
+      fi
+    SCRIPT
+  end
 
   # Start system-wide services.
   # Containers must define a "VIRTUAL_HOST" environment variable to be recognized and routed by the vhost-proxy.
