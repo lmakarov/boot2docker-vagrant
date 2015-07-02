@@ -6,13 +6,20 @@ green='\033[0;32m'
 yellow='\033[1;33m'
 NC='\033[0m'
 
+# For testing
+BRANCH='master'
+if [ ! $BOOT2DOCKER_TEST_ENVIRONMENT == "" ]; then
+	BRANCH=$BOOT2DOCKER_TEST_ENVIRONMENT
+	echo -e "${red}[b2d-setup] testing mode: environment = \"${BRANCH}\"$NC"
+fi
+
 # Download Vagrantfile
 echo -e "${green}Downloading Vagrantfile into the current directory...${NC}"
-curl -sO https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/Vagrantfile
+curl -sO "https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${BRANCH}/Vagrantfile"
 
-# Download and renaming vagrant.yml.dist
-echo -e "${green}Downloading and renaming vagrant.yml.dist into the current directory...${NC}"
-curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/vagrant.yml.dist > vagrant.yml
+# Download vagrant.yml
+echo -e "${green}Downloading vagrant.yml into the current directory...${NC}"
+curl -s "https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${BRANCH}/vagrant.yml"
 
 # Start the boot2docker VM
 echo -e "${green}Starting the boot2docker VM...${NC}"
@@ -45,6 +52,7 @@ echo -e "${green}Checking that everything is in place...${NC}"
 docker version && vagrant ssh -c 'docker-compose --version'
 if [[ $? -ne 0 ]]; then
 	echo -e "${red}Something went wrong. Please review console output for possible clues.${NC}"
+	exit 1
 else
 	echo -e "${green}Docker Host is up and running. Please restart your shell.${NC}"
 fi

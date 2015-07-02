@@ -92,8 +92,8 @@ Vagrant.configure("2") do |config|
   config.vm.define "boot2docker"
 
   config.vm.box = "blinkreaction/boot2docker"
-  config.vm.box_version = "1.6.0"
-  config.vm.box_check_update = false
+  config.vm.box_version = "1.7.0"
+  config.vm.box_check_update = true
 
   ## Network ##
 
@@ -181,52 +181,14 @@ Vagrant.configure("2") do |config|
     # Default Intel adapters do not work well with docker...
     # See https://github.com/blinkreaction/boot2docker-vagrant/issues/13 for details.
     v.customize ["modifyvm", :id, "--nictype1", "virtio"]
+
+    # Disable VirtualBox DNS proxy as it may cause issues.
+    # See https://github.com/docker/machine/pull/1069
+    v.customize ['modifyvm', :id, '--natdnshostresolver1', 'off']
+    v.customize ['modifyvm', :id, '--natdnsproxy1', 'off']
   end
 
   ## Provisioning scripts ##
-
-  # Allow Mac OS X docker client to connect to Docker without TLS auth.
-  # https://github.com/deis/deis/issues/2230#issuecomment-72701992
-  config.vm.provision "shell" do |s|
-    s.inline = <<-SCRIPT
-      echo 'Disabling DOCKER_TLS...'
-      echo 'DOCKER_TLS=no' >> /var/lib/boot2docker/profile
-      /etc/init.d/docker restart
-    SCRIPT
-  end
-
-  # Install bash for compatibility with "#!/bin/bash" scripts.
-  config.vm.provision "shell", run: "always", privileged: false do |s|
-    s.inline = <<-SCRIPT
-      echo 'Installing bash...'
-      tce-load -wi bash.tcz > /dev/null 2>&1
-    SCRIPT
-  end
-
-  # Make docker-compose available inside boot2docker via a container.
-  # https://github.com/docker/compose/issues/598#issuecomment-67762456
-  config.vm.provision "shell", run: "always" do |s|
-    s.inline = <<-SCRIPT
-      echo 'Making docker-compose available inside boot2docker...'
-
-      DC_SCRIPT='
-      #/bin/sh
-
-      # Check if we are in an interactive shell and use "-it" flags if so.
-      interactive=$([ -t 0 ] && echo "-it")
-      
-      # Run docker-compose in a container
-      docker run --rm $interactive \
-        -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock \
-        -e COMPOSE_PROJECT_NAME=$(basename $(pwd)) -w="$(pwd)" \
-        blinkreaction/docker-compose:1.2.0 $*
-      '
-
-      echo "$DC_SCRIPT" > /usr/local/bin/docker-compose
-      chmod +x /usr/local/bin/docker-compose
-      echo 'alias fig=docker-compose' >> /home/docker/.ashrc
-    SCRIPT
-  end
 
   # Pass vagrant_root variable to the VM and cd into the directory upon login.
   config.vm.provision "shell", run: "always" do |s|
@@ -237,46 +199,52 @@ Vagrant.configure("2") do |config|
     s.args = "#{vagrant_mount_point}"
   end
   
-  # dsh script lookup wrapper (Drude Shell).
+  # Install dsh tool (Drude Shell) into VM's permanent storage.
   # https://github.com/blinkreaction/drude
-  config.vm.provision "shell", run: "always" do |s|
+  config.vm.provision "shell" do |s|
     s.inline = <<-SCRIPT
-      DSH_SCRIPT='
-      #/bin/sh
-
-      up="../"
-      pathup="./"
-      slashes=$(pwd | sed "s/[^\/]//g")
-      found=1
-      for i in $(seq 0 ${#slashes}) ; do 
-        if [ -d "${pathup}.docker" ] ; then
-          found=0
-          break
-        else
-          pathup=$pathup$up
-        fi
-      done
-
-      if [ $found -eq 0 ]; then
-        ${pathup}.docker/bin/dsh $*
+      echo "Installing dsh (Drude Shell)..."
+      dsh_script=$(curl -fs https://raw.githubusercontent.com/blinkreaction/drude/develop/bin/dsh)
+      if [ ! $? -eq 0 ]; then
+        echo -e "dsh download failed..."
       else
-        echo "error: drude bin utils (.docker/bin) directory was not found"
+        # Download dsh to the permanent storage
+        sudo mkdir -p /var/lib/boot2docker/bin
+        echo "$dsh_script" | sudo tee /var/lib/boot2docker/bin/dsh >/dev/null
+        sudo chmod +x /var/lib/boot2docker/bin/dsh
+        sudo ln -sf /var/lib/boot2docker/bin/dsh /usr/local/bin/dsh
+
+        # Making the symlink persistent via bootlocal.sh
+        echo '# dsh (Drude Shell)' | sudo tee -a /var/lib/boot2docker/bootlocal.sh > /dev/null
+        echo 'sudo ln -sf /var/lib/boot2docker/bin/dsh /usr/local/bin/dsh' | sudo tee -a /var/lib/boot2docker/bootlocal.sh > /dev/null
+        sudo chmod +x /var/lib/boot2docker/bootlocal.sh
       fi
-      '
-      echo "$DSH_SCRIPT" > /usr/local/bin/dsh
-      chmod +x /usr/local/bin/dsh
     SCRIPT
   end
 
   # Start system-wide services.
-  # vhost-proxy: https://github.com/jwilder/nginx-proxy
   # Containers must define a "VIRTUAL_HOST" environment variable to be recognized and routed by the vhost-proxy.
+  #
+  # Wildcard DNS - Mac configuration:
+  # $ sudo mkdir /etc/resolver
+  # $ echo -e "\n# .drude domain resolution\nnameserver 192.168.10.10" | sudo tee -a  /etc/resolver/drude
+  # Check configuration
+  # $ scutil --dns
+  # $ dig myproject.drude
+  #
   if $vconfig['vhost_proxy']
     config.vm.provision "shell", run: "always", privileged: false do |s|
       s.inline = <<-SCRIPT
         echo "Starting system-wide HTTP reverse proxy bound to 192.168.10.10:80... "
         docker rm -f vhost-proxy > /dev/null 2>&1 || true
-        docker run -d --name vhost-proxy -p 192.168.10.10:80:80 -p 192.168.10.10:443:443 -v /var/run/docker.sock:/tmp/docker.sock jwilder/nginx-proxy > /dev/null
+        docker run -d --name vhost-proxy -p 192.168.10.10:80:80 -p 192.168.10.10:443:443 -v /var/run/docker.sock:/tmp/docker.sock \
+        blinkreaction/nginx-proxy@sha256:54b17e5298e6f6c1d442c3070f9c53f6250898da097f59786e4bfef8e77863df > /dev/null
+
+        echo "Starting system-wide DNS service bound to 192.168.10.10:53... "
+        docker rm -f dns > /dev/null 2>&1 || true
+        docker run -d --name dns -p 192.168.10.10:53:53/udp --cap-add=NET_ADMIN \
+        andyshinn/dnsmasq@sha256:86f83680aba9876e9822e5b28774026fce087f45c4cf007783c5a31ff5c9a5dd \
+        -A /drude/192.168.10.10 > /dev/null
       SCRIPT
     end
   end

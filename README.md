@@ -18,7 +18,7 @@ Automatic installation of prerequisites is available via the following one-liner
 
 On Mac prerequisites are installed using **brew/cask** (brew and cask will be installed if missing).
 
-    curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/presetup-mac.sh | bash
+    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/presetup-mac.sh)
 
 **Windows**
 
@@ -37,11 +37,11 @@ If you are having any issues, please check if they can be reproduced in Git Bash
 
 Run the following command within your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory:
 
-    curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/setup.sh | bash
+    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/setup.sh)
 
 ### Manual installation (Mac and Windows)
 
-1. Copy `Vagrantfile` and `vagrant.yml.dist` files from this repo into your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory.
+1. Copy `Vagrantfile` and `vagrant.yml` files from this repo into your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory.
 2. Rename `vagrant.yml.dist` to `vagrant.yml`
 3. Launch Terminal (Mac) or Git Bash (Windows)
 4. cd to `</path/to/project>`, start the VM
@@ -157,7 +157,8 @@ hosts:
 
 Project specific `<IP>:<port>` mapping for containers is done in via docker-compose in `docker-compose.yml`
 
-# vhost-proxy
+<a name="vhost-proxy"></a>
+## vhost-proxy
 
 As an alternative to using dedicated IPs for different projects a built-in vhost-proxy container can be used.  
 It binds to `192.168.10.10:80` (the default box IP address) and routes web requests based on the `Host` header.
@@ -166,6 +167,7 @@ It binds to `192.168.10.10:80` (the default box IP address) and routes web reque
 - Set `vhost_proxy: true` in your vagrant.yml file and do a 'vagrant reload'
 - Set the `VIRTUAL_HOST` environment variable for the web container in your setup (e.g. `VIRTUAL_HOST=example.com`)
 - Add an entry in your hosts file (e.g. `/etc/hosts`) to point the domain to the default box IP (`192.168.10.10`)
+  - As an alternative see [Wildcard DNS](#dns) instructions below
 
 Example docker run
 
@@ -195,6 +197,25 @@ It is completely fine to use both the vhost-proxy approach and the dedicated IPs
  - `"80"` - expose port "80", docker will randomly pick an available port on the Docker Host
  - `"192.168.10.11:80:80"` - dedicated IP:port mapping
 
+<a name="dns"></a>
+## Wildcard DNS (on Mac)
+
+Enabling the vhost-proxy in [vagrant.yml](vagrant.yml) (`vhost_proxy: true`) will also enable a lightweight dnsmasq container.  
+This container binds to 192.168.10.10:53 and will resolve all `*.drude` DNS requests to `192.168.10.10` (VM's primary IP address), where vhost-proxy listens on port 80.
+
+### Wildcard DNS - Mac configuration
+
+```
+sudo mkdir -p /etc/resolver
+echo -e "\n# .drude domain resolution\nnameserver 192.168.10.10" | sudo tee -a  /etc/resolver/drude
+```
+
+Check configuration
+
+```
+scutil --dns
+dig myproject.drude
+```
 
 ## Tips
 
