@@ -19,7 +19,7 @@ curl -sO "https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${
 
 # Download vagrant.yml
 echo -e "${green}Downloading vagrant.yml into the current directory...${NC}"
-curl -s "https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${BRANCH}/vagrant.yml"
+curl -sO "https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${BRANCH}/vagrant.yml"
 
 # Start the boot2docker VM
 echo -e "${green}Starting the boot2docker VM...${NC}"
