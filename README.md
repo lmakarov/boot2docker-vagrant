@@ -1,4 +1,6 @@
 # Boot2docker Vagrant Box
+
+[![Join the chat at https://gitter.im/blinkreaction/boot2docker-vagrant](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/blinkreaction/boot2docker-vagrant?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Boot2docker Vagrant box for optimized Docker and Docker Compose use on Mac and Windows.
 
 ## What is this?
