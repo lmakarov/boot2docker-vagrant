@@ -54,5 +54,5 @@ if [[ $? -ne 0 ]]; then
 	echo -e "${red}Something went wrong. Please review console output for possible clues.${NC}"
 	exit 1
 else
-	echo -e "${green}Docker Host is up and running.${NC}"
+	echo -e "${green}Docker Host is up and running. Please restart your shell.${NC}"
 fi
