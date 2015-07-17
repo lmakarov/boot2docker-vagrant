@@ -92,7 +92,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "boot2docker"
 
   config.vm.box = "blinkreaction/boot2docker"
-  config.vm.box_version = "1.7.0"
+  config.vm.box_version = "1.7.1"
   config.vm.box_check_update = true
 
   ## Network ##
