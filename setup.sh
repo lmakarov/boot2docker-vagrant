@@ -43,7 +43,7 @@ else
 	echo -e "$DOCKER_HOST_EXPORT"
 fi
 
-if [[ ! $1 == '--no-up' ]]; then
+if [[ $B2D_NO_AUTOSTART == '' ]]; then
 	# Start the boot2docker VM
 	echo -e "${green}Starting the boot2docker VM...${NC}"
 	vagrant up
