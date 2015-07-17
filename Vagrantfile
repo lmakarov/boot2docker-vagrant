@@ -186,10 +186,6 @@ Vagrant.configure("2") do |config|
     # See https://github.com/docker/machine/pull/1069
     v.customize ['modifyvm', :id, '--natdnshostresolver1', 'off']
     v.customize ['modifyvm', :id, '--natdnsproxy1', 'off']
-
-    # Kill the default DHCP server as it will cause issues if we get vboxnet0 interface assigned
-    # See https://github.com/mitchellh/vagrant/issues/3083
-    v.customize ['dhcpserver', 'remove', '--netname', 'HostInterfaceNetworking-vboxnet0']
   end
 
   ## Provisioning scripts ##
