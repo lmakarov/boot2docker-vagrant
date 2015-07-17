@@ -7,19 +7,19 @@ yellow='\033[1;33m'
 NC='\033[0m'
 
 # For testing
-BRANCH='master'
-if [ ! $BOOT2DOCKER_TEST_ENVIRONMENT == "" ]; then
-	BRANCH=$BOOT2DOCKER_TEST_ENVIRONMENT
-	echo -e "${red}[b2d-setup] testing mode: environment = \"${BRANCH}\"$NC"
+if [ ! $B2D_BRANCH == "" ]; then
+	echo -e "${red}[b2d-setup] testing mode: environment = \"${B2D_BRANCH}\"$NC"
+else
+	B2D_BRANCH='master'
 fi
 
 # Download Vagrantfile
 echo -e "${green}Downloading Vagrantfile into the current directory...${NC}"
-curl -sO "https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${BRANCH}/Vagrantfile"
+curl -sO "https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${B2D_BRANCH}/Vagrantfile"
 
 # Download vagrant.yml
 echo -e "${green}Downloading vagrant.yml into the current directory...${NC}"
-curl -sO "https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${BRANCH}/vagrant.yml"
+curl -sO "https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${B2D_BRANCH}/vagrant.yml"
 
 # Start the boot2docker VM
 echo -e "${green}Starting the boot2docker VM...${NC}"
