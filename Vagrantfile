@@ -165,7 +165,8 @@ Vagrant.configure("2") do |config|
   # vboxfs: reliable, cross-platform and terribly slow performance
   else
     @ui.warn "WARNING: defaulting to the slowest folder sync option (vboxfs)"
-      config.vm.synced_folder vagrant_root, vagrant_mount_point
+      config.vm.synced_folder vagrant_root, vagrant_mount_point,
+        mount_options: ["dmode=770", "fmode=660"]
   end
 
   # Make host SSH keys available to containers on /.ssh
