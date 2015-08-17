@@ -2,7 +2,7 @@
 
 # Install prerequisites via choco (virtualbox and vagrant)
 curl -L https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/feature/windows/presetup-win.cmd -o $WINDIR/Temp/presetup-win.cmd
-curl -L -O https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/feature/windows/presetup-win.vbs -o $WINDIR/Temp/presetup-win.vbs
+curl -L https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/feature/windows/presetup-win.vbs -o $WINDIR/Temp/presetup-win.vbs
 cscript $WINDIR/Temp/presetup-win.vbs
 
 # Install Docker
