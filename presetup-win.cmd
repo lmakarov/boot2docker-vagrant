@@ -1,8 +1,8 @@
-REM Installation chocolatey
+REM Install Chocolatey
 @powershell -NoProfile -ExecutionPolicy unrestricted -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
 
-REM Install git, virtualbox, vagrant, docker
-choco install git -y
+REM Install babun, virtualbox, vagrant, docker
+choco install babun -y
 choco install virtualbox -y
 choco install vagrant -y
 choco install docker -y
