@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0-rc2 (2015-08-18)
+
+- Upgrade to Docker 1.8.1 base box
+  - Docker 1.8.1, Docker Compose 1.4.0
+- Switching to Babun shell on Windows
+- Now binding to the particular versions of Docker and Docker Compose on both Mac and Windows
+- Fully automated setup on Windows (once Babun is installed)
+- Minor fixes and cleanup, documentation updates
+
 ## 1.0.0-rc1 (2015-07-02)
 
 - Upgrade to Docker 1.7.0 base box
