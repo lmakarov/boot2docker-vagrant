@@ -9,41 +9,46 @@ The stock boot2docker currently mounts host volumes via the default VirtualBox G
 ## Prerequisites
 1. [VirtualBox](https://www.virtualbox.org/) 4.3.20+
 2. [Vagrant](https://www.vagrantup.com/) 1.6.3+
-3. [Git](http://git-scm.com/)
+3. [Babun](http://babun.github.io) - A Linux-type shell, **Windows only**
 
 Proceed to [Setup and usage](#setup) if you already have all prerequisites installed or prefer to install some/all manually.  
 Automatic installation of prerequisites is available via the following one-liners.
 
 **Mac**
 
-On Mac prerequisites are installed using **brew/cask** (brew and cask will be installed if missing).
+Prerequisites are installed using **brew/cask** (brew and cask will be installed if missing).
 
     bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/presetup-mac.sh)
 
 **Windows**
 
-On Windows prerequisites are installed using **chocolatey** (chocolatey will be installed if missing).
+**On Windows you will need a good Linux-type shell. [Babun](http://babun.github.io) is a great option. All automated scripts and instructions in this project assume using Babun shell and were not tested with other CYGWIN shells.**
 
-1. Run Command Prompt as administrator
-2. Copy and and paste there the code from [presetup-win.cmd](https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/presetup-win.cmd)
+Prerequisites are installed using **babun** and **chocolatey** (chocolatey will be installed if missing).
+
+**Docker Compose will be installed natively on Windows via pip!**
+
+1. Download and install [Babun](http://babun.github.io)
+2. Run the following in babun
+
+    ```
+    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/presetup-win.sh)
+    ```
 
 <a name="setup"></a>
 ## Setup and usage
 
 ### Automatic installation (Mac and Windows)
 
-**On Windows** Git Bash is the recommended option to run console commands.
-If you are having any issues, please check if they can be reproduced in Git Bash.
-
 Run the following command within your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory:
 
-    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/setup.sh)
+    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/develop/setup.sh)
 
 ### Manual installation (Mac and Windows)
 
 1. Copy `Vagrantfile` and `vagrant.yml` files from this repo into your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory.
 2. Rename `vagrant.yml.dist` to `vagrant.yml`
-3. Launch Terminal (Mac) or Git Bash (Windows)
+3. Launch Terminal (Mac) or Babun (Windows)
 4. cd to `</path/to/project>`, start the VM
 
     ```
@@ -55,7 +60,7 @@ Run the following command within your `<Projects>` (shared boo2docker VM for mul
     
     ```
     docker version
-    vagrant ssh -c 'docker-compose --version'
+    docker-compose --version
     ```
 
 <a name="synced-folders"></a>
