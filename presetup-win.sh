@@ -15,3 +15,8 @@ curl -skS https://bootstrap.pypa.io/get-pip.py | python
 pip install virtualenv
 curl -skS https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python
 pip install -U docker-compose==1.4.0
+
+# Git settings
+echo "Adjusting git defaults"
+git config --global core.autocrlf input
+git config --system core.longpaths true
