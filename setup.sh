@@ -22,7 +22,7 @@ echo -e "${green}Downloading vagrant.yml into the current directory...${NC}"
 curl -sO "https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${B2D_BRANCH}/vagrant.yml"
 
 # Write DOCKER_HOST variable export to a matching .rc file based on the shell (bash or zsh)
-SOURCE_FILE='';
+SOURCE_FILE=''
 DOCKER_HOST_EXPORT='\n# Docker (default for Vagrant based boxes)\nexport DOCKER_HOST=tcp://localhost:2375\n'
 
 # Detect shell to write to the right .rc file
