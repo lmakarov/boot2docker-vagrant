@@ -12,9 +12,17 @@ required_plugins.each do |plugin|
   exec "vagrant #{ARGV.join(' ')}" if need_restart
 end
 
+# Determine if we are on Windows host or not.
+is_windows = Vagrant::Util::Platform.windows?
+
 # Determine paths.
 vagrant_root = File.dirname(__FILE__)  # Vagrantfile location
-vagrant_mount_point = vagrant_root.gsub(/[a-zA-Z]:/, '')  # Trim Windows drive letters.
+if is_windows
+  vagrant_mount_point = `cygpath #{vagrant_root}`.strip! # Remove trailing \n 
+else
+  vagrant_mount_point = vagrant_root
+end
+
 vagrant_folder_name = File.basename(vagrant_root)  # Folder name only. Used as the SMB share name.
 
 # Use vagrant.yml for local VM configuration overrides.
@@ -25,8 +33,6 @@ if !File.exist?(vagrant_root + '/vagrant.yml')
 end
 $vconfig = YAML::load_file(vagrant_root + '/vagrant.yml')
 
-# Determine if we are on Windows host or not.
-is_windows = Vagrant::Util::Platform.windows?
 if is_windows
   require 'win32ole'
   # Determine if Vagrant was launched from the elevated command prompt.
@@ -159,7 +165,8 @@ Vagrant.configure("2") do |config|
   # vboxfs: reliable, cross-platform and terribly slow performance
   else
     @ui.warn "WARNING: defaulting to the slowest folder sync option (vboxfs)"
-      config.vm.synced_folder vagrant_root, vagrant_mount_point
+      config.vm.synced_folder vagrant_root, vagrant_mount_point,
+        mount_options: ["dmode=770", "fmode=660"]
   end
 
   # Make host SSH keys available to containers on /.ssh
