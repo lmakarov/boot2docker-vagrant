@@ -36,8 +36,6 @@ if [[ $SOURCE_FILE ]]; then
 		echo -e "${green}Adding automatic DOCKER_HOST export to $HOME/$SOURCE_FILE${NC}"
 		echo -e $DOCKER_HOST_EXPORT >> $HOME/$SOURCE_FILE
 	fi
-	# Source the file so we can use the DOCKER_HOST variable.
-	. $HOME/$SOURCE_FILE
 else
 	echo -e "${red}Cannot detect your shell. Please manually add the following to your respective .rc or .profile file:${NC}"
 	echo -e "$DOCKER_HOST_EXPORT"
