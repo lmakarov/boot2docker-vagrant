@@ -193,6 +193,10 @@ Vagrant.configure("2") do |config|
     # See https://github.com/docker/machine/pull/1069
     v.customize ['modifyvm', :id, '--natdnshostresolver1', 'off']
     v.customize ['modifyvm', :id, '--natdnsproxy1', 'off']
+
+    # VirtualBox 5 supports paravirtualization, and defaults this setting to
+    # 'legacy' which isn't enabling KVM.
+    v.customize ['modifyvm', :id, '--paravirtprovider', 'kvm']
   end
 
   ## Provisioning scripts ##
