@@ -101,6 +101,11 @@ Vagrant.configure("2") do |config|
   config.vm.box_version = "1.8.1"
   config.vm.box_check_update = true
 
+  # Disable vbguest autoupdating as we boot from a read-only ISO.
+  if Vagrant.has_plugin?("vagrant-vbguest")
+    config.vbguest.auto_update = false
+  end
+
   ## Network ##
 
   # The default box private network IP is 192.168.10.10
