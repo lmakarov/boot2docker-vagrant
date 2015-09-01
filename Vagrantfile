@@ -145,7 +145,7 @@ Vagrant.configure("2") do |config|
     config.vm.provision "shell", run: "always" do |s|
       s.inline = <<-SCRIPT
         mkdir -p vagrant $2
-        mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,sec=ntlm,username=$3,pass=$4 //192.168.10.1/$1 $2
+        mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,sec=ntlm,username=$3,pass=$4,dir_mode=0755,file_mode=0644 //192.168.10.1/$1 $2
       SCRIPT
       s.args = "#{vagrant_folder_name} #{vagrant_mount_point} #{$vconfig['synced_folders']['smb_username']} #{$vconfig['synced_folders']['smb_password']}"
     end  
