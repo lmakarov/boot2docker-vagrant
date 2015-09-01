@@ -129,16 +129,19 @@ Vagrant.configure("2") do |config|
       smb_password: synced_folders['smb_password']
   # smb2: experimental, does not require running vagrant as admin.
   elsif synced_folders['type'] == "smb2" && is_windows
-    # Create the share before 'up'.
-    config.trigger.before :up, :stdout => true, :force => true do
-      info 'Setting up SMB user and share'
-      windows_net_share vagrant_folder_name, vagrant_root
-    end
-    
-    # Remove the share after 'halt'.
-    config.trigger.after :destroy, :stdout => true, :force => true do
-      info 'Removing SMB user and share'
-      windows_net_share_remove vagrant_folder_name
+
+    if $vconfig['synced_folders']['smb2_auto']
+      # Create the share before 'up'.
+      config.trigger.before :up, :stdout => true, :force => true do
+        info 'Setting up SMB user and share'
+        windows_net_share vagrant_folder_name, vagrant_root
+      end
+
+      # Remove the share after 'halt'.
+      config.trigger.after :destroy, :stdout => true, :force => true do
+        info 'Removing SMB user and share'
+        windows_net_share_remove vagrant_folder_name
+      end
     end
 
     # Mount the share in boot2docker.
@@ -148,7 +151,7 @@ Vagrant.configure("2") do |config|
         mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,sec=ntlm,username=$3,pass=$4,dir_mode=0755,file_mode=0644 //192.168.10.1/$1 $2
       SCRIPT
       s.args = "#{vagrant_folder_name} #{vagrant_mount_point} #{$vconfig['synced_folders']['smb_username']} #{$vconfig['synced_folders']['smb_password']}"
-    end  
+    end
   # rsync: the best performance, cross-platform platform, one-way only. Run `vagrant rsync-auto` to start auto sync.
   elsif synced_folders['type'] == "rsync"
     # Only sync explicitly listed folders.
