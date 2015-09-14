@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1 (2015-09-14)
+
+- Host's home directory mapping (`~ => /.home`) to make SSH keys and other credentials and configs available to containers.
+
 ## 1.0.0 (2015-09-14)
 
 - SMB mounts on Windows
