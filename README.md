@@ -18,7 +18,7 @@ Automatic installation of prerequisites is available via the following one-liner
 
 Prerequisites are installed using **brew/cask** (brew and cask will be installed if missing).
 
-    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/develop/presetup-mac.sh)
+    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/presetup-mac.sh)
 
 **Windows**
 
@@ -32,7 +32,7 @@ Prerequisites are installed using **babun** and **chocolatey** (chocolatey will 
 2. Run the following in babun
 
     ```
-    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/develop/presetup-win.sh)
+    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/presetup-win.sh)
     ```
 
 <a name="setup"></a>
@@ -42,7 +42,7 @@ Prerequisites are installed using **babun** and **chocolatey** (chocolatey will 
 
 Run the following command within your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory:
 
-    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/develop/setup.sh)
+    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/setup.sh)
 
 ### Manual installation (Mac and Windows)
 

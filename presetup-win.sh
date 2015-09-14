@@ -7,7 +7,7 @@ DOCKER_COMPOSE_VERSION=1.4.0
 if [ ! $B2D_BRANCH == "" ]; then
 	echo -e "${red}[b2d-setup] testing mode: environment = \"${B2D_BRANCH}\"$NC"
 else
-	B2D_BRANCH='develop'
+	B2D_BRANCH='master'
 fi
 
 # Install prerequisites via choco (virtualbox and vagrant)

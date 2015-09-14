@@ -10,7 +10,7 @@ NC='\033[0m'
 if [ ! $B2D_BRANCH == "" ]; then
 	echo -e "${red}[b2d-setup] testing mode: environment = \"${B2D_BRANCH}\"$NC"
 else
-	B2D_BRANCH='develop'
+	B2D_BRANCH='master'
 fi
 
 # Download Vagrantfile
