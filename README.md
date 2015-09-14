@@ -256,6 +256,11 @@ Add this to your user settings (Sublime Text > Preferences > Settings - User):
 
 ST3 does not update the ctime extended file attribute when saving a file. This leads to NFS not seeing the changes in a file unless the file size changes as well (i.e. changing a single symbol in a file with ST3 will not be visible over NFS). The setting above fixes that.
 
+<a name="troubleshooting"></a>
+## troubleshooting
+
+See [Troubleshooting](docs/troubleshooting.md) section of the docs.
+
 ## License
 
 The MIT License (MIT)
