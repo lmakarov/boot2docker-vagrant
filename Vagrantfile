@@ -172,7 +172,12 @@ Vagrant.configure("2") do |config|
         mount_options: ["dmode=770", "fmode=660"]
   end
 
-  # Make host SSH keys available to containers on /.ssh
+  # Make host home directory available to containers in /.home
+  if File.directory?(File.expand_path("~"))
+    config.vm.synced_folder "~", "/.home"
+  end
+
+  # Make host SSH keys available to containers in /.ssh (legacy, TO BE REMOVED soon)
   if File.directory?(File.expand_path("~/.ssh"))
     config.vm.synced_folder "~/.ssh", "/.ssh"
   end
