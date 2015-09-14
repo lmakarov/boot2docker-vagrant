@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0 (2015-09-14)
+
+- SMB mounts on Windows
+  - Added `smb2_auto: true/false` option to allow switching to manual provisioning of the smb user and share.
+  - Fixed share permissions
+- Added Troubleshooting docs
+
 ## 1.0.0-rc2 (2015-08-18)
 
 - Upgrade to Docker 1.8.1 base box

@@ -42,7 +42,7 @@ Prerequisites are installed using **babun** and **chocolatey** (chocolatey will 
 
 Run the following command within your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory:
 
-    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/develop/setup.sh)
+    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/setup.sh)
 
 ### Manual installation (Mac and Windows)
 
@@ -255,3 +255,32 @@ Add this to your user settings (Sublime Text > Preferences > Settings - User):
     }
 
 ST3 does not update the ctime extended file attribute when saving a file. This leads to NFS not seeing the changes in a file unless the file size changes as well (i.e. changing a single symbol in a file with ST3 will not be visible over NFS). The setting above fixes that.
+
+<a name="troubleshooting"></a>
+## troubleshooting
+
+See [Troubleshooting](docs/troubleshooting.md) section of the docs.
+
+## License
+
+The MIT License (MIT)
+
+Copyright (c) 2015 BlinkReaction
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
