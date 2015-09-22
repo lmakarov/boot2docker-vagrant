@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2 (2015-09-22)
+
+- Fix docker and docker-compose install on mac
+- README - mention that preset scripts can be used for updates as well
+
 ## 1.0.1 (2015-09-14)
 
 - Host's home directory mapping (`~ => /.home`) to make SSH keys and other credentials and configs available to containers.
