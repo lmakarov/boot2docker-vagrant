@@ -12,7 +12,9 @@ The stock boot2docker currently mounts host volumes via the default VirtualBox G
 3. [Babun](http://babun.github.io) - A Linux-type shell, **Windows only**
 
 Proceed to [Setup and usage](#setup) if you already have all prerequisites installed or prefer to install some/all manually.  
-Automatic installation of prerequisites is available via the following one-liners.
+
+Automatic **installation** and **updates** of prerequisites is available via the following one-liners.  
+Make sure to stop all VirtualBox VMs prior to performing updates.
 
 **Mac**
 

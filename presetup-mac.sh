@@ -31,10 +31,10 @@ brew cask install vagrant
 
 # Install docker
 echo -e "${green}Installing docker...${NC}"
-curl -fsL "https://get.docker.com/builds/$(uname -s)/$(uname -m)/docker-$DOCKER_VERSION" -o /usr/local/bin/docker
-chmod +x /usr/local/bin/docker
+sudo curl -sSL "https://get.docker.com/builds/$(uname -s)/$(uname -m)/docker-$DOCKER_VERSION" -o /usr/local/bin/docker
+sudo chmod +x /usr/local/bin/docker
 
 # Install docker-compose
 echo -e "${green}Installing docker-compose...${NC}"
-curl -fsL "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
+sudo curl -sSL "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
