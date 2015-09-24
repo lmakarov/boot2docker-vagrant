@@ -113,14 +113,38 @@ Vagrant.configure("2") do |config|
  ####################################################################
  ## Synced folders configuration ##
 
+  # System-wide cachefilesd service. Improves performance of nfs and smb shares.
+  if $vconfig['cachefilesd']
+    config.vm.provision "shell", run: "always", privileged: false do |s|
+      s.inline = <<-SCRIPT
+        echo "Starting system-wide cachefilesd service... "
+        sudo modprobe cachefiles
+        docker rm -f fsc > /dev/null 2>&1 || true
+        docker run -d --name fsc --privileged -v /mnt/sda1/var/cache/fscache:/var/cache/fscache \
+        sparkfabrik/docker-cachefilesd > /dev/null
+      SCRIPT
+    end  
+  end
+
   synced_folders = $vconfig['synced_folders']
   # nfs: better performance on Mac
   if synced_folders['type'] == "nfs"  && !is_windows
     config.vm.synced_folder vagrant_root, vagrant_mount_point,
       type: "nfs",
-      mount_options: ["nolock", "vers=3", "tcp"]
+      mount_options: ["nolock", "vers=3", "tcp", "fsc"]
     config.nfs.map_uid = Process.uid
     config.nfs.map_gid = Process.gid
+  # nfs2: even better performance on Mac
+  elsif synced_folders['type'] == "nfs2"  && !is_windows
+    # Mount the share in boot2docker.
+    config.vm.provision "shell", run: "always" do |s|
+      s.inline = <<-SCRIPT
+        mkdir -p $1
+        /usr/local/etc/init.d/nfs-client start
+        mount.nfs -o nolock,vers=3,tcp,fsc 192.168.10.1:$1 $1
+      SCRIPT
+      s.args = "#{vagrant_mount_point}"
+    end  
   # smb: better performance on Windows. Requires Vagrant to be run with admin privileges.
   elsif synced_folders['type'] == "smb" && is_windows
     config.vm.synced_folder vagrant_root, vagrant_mount_point,
@@ -148,7 +172,7 @@ Vagrant.configure("2") do |config|
     config.vm.provision "shell", run: "always" do |s|
       s.inline = <<-SCRIPT
         mkdir -p vagrant $2
-        mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,sec=ntlm,username=$3,pass=$4,dir_mode=0755,file_mode=0644 //192.168.10.1/$1 $2
+        mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,sec=ntlm,username=$3,pass=$4,dir_mode=0755,file_mode=0644,fsc //192.168.10.1/$1 $2
       SCRIPT
       s.args = "#{vagrant_folder_name} #{vagrant_mount_point} #{$vconfig['synced_folders']['smb_username']} #{$vconfig['synced_folders']['smb_password']}"
     end
