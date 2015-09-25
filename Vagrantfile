@@ -257,11 +257,10 @@ Vagrant.configure("2") do |config|
   if $vconfig['dnsmasq']
     config.vm.provision "shell", run: "always", privileged: false do |s|
       s.inline = <<-SCRIPT
-        echo "Starting system-wide DNS service bound to 192.168.10.10:53... "
+        echo "Starting system-wide DNS service... "
         docker rm -f dns > /dev/null 2>&1 || true
-        docker run -d --name dns -p 192.168.10.10:53:53/udp --cap-add=NET_ADMIN \
-        andyshinn/dnsmasq@sha256:86f83680aba9876e9822e5b28774026fce087f45c4cf007783c5a31ff5c9a5dd \
-        -A /drude/192.168.10.10 > /dev/null
+        docker run -d --name dns -p 53:53/udp --cap-add=NET_ADMIN -v /var/run/docker.sock:/var/run/docker.sock \
+        blinkreaction/dns-discovery@sha256:4c0bc8f1abca904020459c6196cc547d0783d921abcf1495fdffe2e862dfdf86 > /dev/null
       SCRIPT
     end
   end
