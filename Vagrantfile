@@ -219,7 +219,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell" do |s|
     s.inline = <<-SCRIPT
       echo "Installing dsh (Drude Shell)..."
-      dsh_script=$(curl -fs https://raw.githubusercontent.com/blinkreaction/drude/develop/bin/dsh)
+      dsh_script=$(curl -fs https://raw.githubusercontent.com/blinkreaction/drude/master/bin/dsh)
       if [ ! $? -eq 0 ]; then
         echo -e "dsh download failed..."
       else
