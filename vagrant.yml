@@ -53,4 +53,3 @@ vhost_proxy: true
 # $ echo -e "\n# .drude domain resolution\nnameserver 192.168.10.10" | sudo tee -a  /etc/resolver/drude
 # On Windows: add 192.168.10.10 as the primary DNS server and your LAN/ISP/Google DNS as secondary.
 dnsmasq: true
-

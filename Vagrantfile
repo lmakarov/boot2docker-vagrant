@@ -242,7 +242,7 @@ Vagrant.configure("2") do |config|
   if $vconfig['vhost_proxy']
     config.vm.provision "shell", run: "always", privileged: false do |s|
       s.inline = <<-SCRIPT
-        echo "Starting system-wide HTTP reverse proxy bound to 192.168.10.10:80... "
+        echo "Starting system-wide HTTP/HTTPS reverse proxy bound to 192.168.10.10:80... "
         docker rm -f vhost-proxy > /dev/null 2>&1 || true
         docker run -d --name vhost-proxy -p 192.168.10.10:80:80 -p 192.168.10.10:443:443 -v /var/run/docker.sock:/tmp/docker.sock \
         blinkreaction/nginx-proxy@sha256:04d1790726a252d6d2f89c5702533e174c284fd34dcb5599d6881da34354f30e > /dev/null
