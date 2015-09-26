@@ -7,8 +7,8 @@ The stock boot2docker currently mounts host volumes via the default VirtualBox G
 
 <a name="requirements"></a>
 ## Prerequisites
-1. [VirtualBox](https://www.virtualbox.org/) 4.3.20+
-2. [Vagrant](https://www.vagrantup.com/) 1.6.3+
+1. [VirtualBox](https://www.virtualbox.org/) 1.7.3+
+2. [Vagrant](https://www.vagrantup.com/) 5.0+
 3. [Babun](http://babun.github.io) - A Linux-type shell, **Windows only**
 
 Proceed to [Setup and usage](#setup) if you already have all prerequisites installed or prefer to install some/all manually.  
