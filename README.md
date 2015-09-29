@@ -175,6 +175,7 @@ It binds to `192.168.10.10:80` (the default box IP address) and routes web reque
 - Set the `VIRTUAL_HOST` environment variable for the web container in your setup (e.g. `VIRTUAL_HOST=example.com`)
 - Add an entry in your hosts file (e.g. `/etc/hosts`) to point the domain to the default box IP (`192.168.10.10`)
   - As an alternative see [Wildcard DNS](#dns) instructions below
+- Multiple domain names can be separated by comas: `VIRTUAL_HOST=example.com,www.example.com`
 
 Example docker run
 
@@ -205,24 +206,44 @@ It is completely fine to use both the vhost-proxy approach and the dedicated IPs
  - `"192.168.10.11:80:80"` - dedicated IP:port mapping
 
 <a name="dns"></a>
-## Wildcard DNS (on Mac)
+## DNS and service discovery
 
-Enabling the vhost-proxy in [vagrant.yml](vagrant.yml) (`vhost_proxy: true`) will also enable a lightweight dnsmasq container.  
-This container binds to 192.168.10.10:53 and will resolve all `*.drude` DNS requests to `192.168.10.10` (VM's primary IP address), where vhost-proxy listens on port 80.
+### DNS resolution
 
-### Wildcard DNS - Mac configuration
+The built-in `dns` container can be used to resolve all `*.drude` domain names to `192.168.10.10` (VM's primary IP address), where vhost-proxy listens on port 80.
+
+**Mac**
 
 ```
 sudo mkdir -p /etc/resolver
 echo -e "\n# .drude domain resolution\nnameserver 192.168.10.10" | sudo tee -a  /etc/resolver/drude
 ```
 
-Check configuration
+**Windows**
+
+On Windows add `192.168.10.10` as the primary DNS server and your LAN/ISP/Google DNS as secondary.
+
+
+### Service discovery
+
+The built-in `dns` container can also be used for local DNS based service discovery.  
+You can define an arbitrary domain name via the `DOMAIN_NAME` environment variable for any container and it will be resolved to the internal IP address of that container.
+
+**Example**
 
 ```
-scutil --dns
-dig myproject.drude
+docker run --name nginx -d -e "DOMAIN_NAME=my-project.web.docker" nginx:latest
+docker run busybox ping my-project.web.docker -c 1
 ```
+
+```
+PING my_project.web.docker (172.17.42.8): 56 data bytes
+64 bytes from 172.17.42.8: seq=0 ttl=64 time=0.052 ms
+...
+
+```
+
+Multiple domain names can be separated by comas: `DOMAIN_NAME=my-project.web.docker,www.my-project.web.docker`
 
 ## Tips
 
