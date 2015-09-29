@@ -219,6 +219,16 @@ Vagrant.configure("2") do |config|
     SCRIPT
   end
 
+  # System-wide dnsmasq service for DNS discovery and name resolution
+  config.vm.provision "shell", run: "always", privileged: false do |s|
+    s.inline = <<-SCRIPT
+      echo "Starting system-wide DNS service... "
+      docker rm -f dns > /dev/null 2>&1 || true
+      docker run -d --name dns -p 53:53/udp --cap-add=NET_ADMIN -v /var/run/docker.sock:/var/run/docker.sock \
+      blinkreaction/dns-discovery@sha256:4c0bc8f1abca904020459c6196cc547d0783d921abcf1495fdffe2e862dfdf86 > /dev/null
+    SCRIPT
+  end
+
   # System-wide vhost-proxy service.
   # Containers must define a "VIRTUAL_HOST" environment variable to be recognized and routed by the vhost-proxy.
   if $vconfig['vhost_proxy']
@@ -232,21 +242,6 @@ Vagrant.configure("2") do |config|
     end
   end
   
-  # System-wide dnsmasq service.
-  # Wildcard DNS - Mac configuration:
-  # $ sudo mkdir /etc/resolver
-  # $ echo -e "\n# .drude domain resolution\nnameserver 192.168.10.10" | sudo tee -a  /etc/resolver/drude
-  if $vconfig['dnsmasq']
-    config.vm.provision "shell", run: "always", privileged: false do |s|
-      s.inline = <<-SCRIPT
-        echo "Starting system-wide DNS service... "
-        docker rm -f dns > /dev/null 2>&1 || true
-        docker run -d --name dns -p 53:53/udp --cap-add=NET_ADMIN -v /var/run/docker.sock:/var/run/docker.sock \
-        blinkreaction/dns-discovery@sha256:4c0bc8f1abca904020459c6196cc547d0783d921abcf1495fdffe2e862dfdf86 > /dev/null
-      SCRIPT
-    end
-  end
-
   # Automatically start containers if docker-compose.yml is present in the current directory.
   # See "autostart" property in vagrant.yml.
   if File.file?('./docker-compose.yml') && $vconfig['compose_autostart']
