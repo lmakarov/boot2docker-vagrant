@@ -30,12 +30,13 @@ v.cpus: 1  # CPU settings. VirtualBox works much better with a single CPU.
 
 # Network settings
 # The default box private network IP is 192.168.10.10
-# Uncomment lines below to map additional IP addresses for use with multiple projects.
-# Project specific `<IP>:<port>` mapping for containers is done in via docker-compose in `docker-compose.yml`
-hosts:
-    #- ip: 192.168.10.11
-    #- ip: 192.168.10.12
-    #- ip: 192.168.10.13
+ips:
+  - 192.168.10.10
+  # Uncomment lines below to map additional IP addresses for use with multiple projects.
+  # Project specific `<IP>:<port>` mapping for containers is done in via docker-compose in `docker-compose.yml`
+  #- 192.168.10.11
+  #- 192.168.10.12
+  #- 192.168.10.13
 
 # Automatically start containers if docker-compose.yml is present in the current directory (default: false).
 compose_autostart: false
