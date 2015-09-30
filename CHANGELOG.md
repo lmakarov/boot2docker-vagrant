@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.1.0 (2015-09-30)
+
+- Switch to blinkreaction/boot2docker base box v1.8.2
+  - Docker v1.8.2
+  - Docker Compose v1.4.2
+- DNS resolution and service discovery
+  - Simple DNS based service discovery using dnsmasq and docker-gen
+  - dns service container is required and cannot be disabled
+- Default box IP can be configured in vagrant.yml
+- vhost-proxy HTTPS support
+- Switch to the stable branch for dsh (master)
+- Docs updates
+  - DNS resolution and service discovery
+  - Bumped required/supported VirtualBox (5.0+) and Vagrant (1.7.3+) versions
+- Disable default DHCP server and network interface after VirtualBox installation
+
 ## 1.0.2 (2015-09-22)
 
 - Fix docker and docker-compose install on mac
