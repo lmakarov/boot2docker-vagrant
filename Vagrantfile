@@ -98,17 +98,21 @@ Vagrant.configure("2") do |config|
   config.vm.define "boot2docker"
 
   config.vm.box = "blinkreaction/boot2docker"
-  config.vm.box_version = "1.8.1"
+  config.vm.box_version = "1.8.2"
   config.vm.box_check_update = true
 
   ## Network ##
 
-  # The default box private network IP is 192.168.10.10
-  # Configure additional IP addresses in vagrant.yml
-  # Using Intel PRO/1000 MT Server [82545EM] network adapter - shows slightly better performance compared to "virtio".
-  $vconfig['hosts'].each do |host|
-    config.vm.network "private_network", ip: host['ip'], nic_type: "82545EM"
-  end unless $vconfig['hosts'].nil?
+  box_ip = $vconfig['ip']['primary']  # e.g. 192.168.10.10
+  host_ip = box_ip.gsub(/(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/, '\1.\2.\3.1')  # e.g. 192.168.10.1
+
+  # Primary private network IP (default: 192.168.10.10)
+  # Using Intel PRO/1000 MT Desktop [82540EM] network adapter - shows slightly better performance compared to "virtio".
+  config.vm.network "private_network", ip: box_ip, nic_type: "82540EM"
+  # Addtional IP addresses (see vagrant.yml)
+  $vconfig['ip']['additional'].each do |private_ip|
+    config.vm.network "private_network", ip: private_ip, nic_type: "82540EM"
+  end unless $vconfig['ip']['additional'].nil?
 
  ####################################################################
  ## Synced folders configuration ##
@@ -148,9 +152,9 @@ Vagrant.configure("2") do |config|
     config.vm.provision "shell", run: "always" do |s|
       s.inline = <<-SCRIPT
         mkdir -p vagrant $2
-        mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,sec=ntlm,username=$3,pass=$4,dir_mode=0755,file_mode=0644 //192.168.10.1/$1 $2
+        mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,sec=ntlm,username=$3,pass=$4,dir_mode=0755,file_mode=0644 //$5/$1 $2
       SCRIPT
-      s.args = "#{vagrant_folder_name} #{vagrant_mount_point} #{$vconfig['synced_folders']['smb_username']} #{$vconfig['synced_folders']['smb_password']}"
+      s.args = "#{vagrant_folder_name} #{vagrant_mount_point} #{$vconfig['synced_folders']['smb_username']} #{$vconfig['synced_folders']['smb_password']} #{host_ip}"
     end
   # rsync: the best performance, cross-platform platform, one-way only. Run `vagrant rsync-auto` to start auto sync.
   elsif synced_folders['type'] == "rsync"
@@ -192,11 +196,6 @@ Vagrant.configure("2") do |config|
     v.cpus = $vconfig['v.cpus']  # CPU settings. VirtualBox works much better with a single CPU.
     v.memory = $vconfig['v.memory']  # Memory settings.
     
-    # Switch the base box NAT network adapters from "82545EM" to "virtio".
-    # Default Intel adapters do not work well with docker...
-    # See https://github.com/blinkreaction/boot2docker-vagrant/issues/13 for details.
-    v.customize ["modifyvm", :id, "--nictype1", "virtio"]
-
     # Disable VirtualBox DNS proxy as it may cause issues.
     # See https://github.com/docker/machine/pull/1069
     v.customize ['modifyvm', :id, '--natdnshostresolver1', 'off']
@@ -218,52 +217,39 @@ Vagrant.configure("2") do |config|
   # https://github.com/blinkreaction/drude
   config.vm.provision "shell" do |s|
     s.inline = <<-SCRIPT
-      echo "Installing dsh (Drude Shell)..."
-      dsh_script=$(curl -fs https://raw.githubusercontent.com/blinkreaction/drude/develop/bin/dsh)
-      if [ ! $? -eq 0 ]; then
-        echo -e "dsh download failed..."
-      else
-        # Download dsh to the permanent storage
-        sudo mkdir -p /var/lib/boot2docker/bin
-        echo "$dsh_script" | sudo tee /var/lib/boot2docker/bin/dsh >/dev/null
-        sudo chmod +x /var/lib/boot2docker/bin/dsh
-        sudo ln -sf /var/lib/boot2docker/bin/dsh /usr/local/bin/dsh
-
-        # Making the symlink persistent via bootlocal.sh
-        echo '# dsh (Drude Shell)' | sudo tee -a /var/lib/boot2docker/bootlocal.sh > /dev/null
-        echo 'sudo ln -sf /var/lib/boot2docker/bin/dsh /usr/local/bin/dsh' | sudo tee -a /var/lib/boot2docker/bootlocal.sh > /dev/null
-        sudo chmod +x /var/lib/boot2docker/bootlocal.sh
-      fi
+      # echo "Installing dsh (Drude Shell)..."
+      sudo curl -sSL https://raw.githubusercontent.com/blinkreaction/drude/master/bin/dsh -o /var/lib/boot2docker/bin/dsh
+      sudo chmod +x /var/lib/boot2docker/bin/dsh
+      sudo ln -sf /var/lib/boot2docker/bin/dsh /usr/local/bin/dsh
     SCRIPT
   end
 
-  # Start system-wide services.
+  # System-wide dnsmasq service for DNS discovery and name resolution
+  config.vm.provision "shell", run: "always", privileged: false do |s|
+    s.inline = <<-SCRIPT
+      echo "Starting system-wide DNS service... "
+      docker rm -f dns > /dev/null 2>&1 || true
+      docker run -d --name dns -p $1:53:53/udp -p 172.17.42.1:53:53/udp --cap-add=NET_ADMIN \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      blinkreaction/dns-discovery@sha256:4c0bc8f1abca904020459c6196cc547d0783d921abcf1495fdffe2e862dfdf86 > /dev/null
+    SCRIPT
+    s.args = "#{box_ip}"
+  end
+
+  # System-wide vhost-proxy service.
   # Containers must define a "VIRTUAL_HOST" environment variable to be recognized and routed by the vhost-proxy.
-  #
-  # Wildcard DNS - Mac configuration:
-  # $ sudo mkdir /etc/resolver
-  # $ echo -e "\n# .drude domain resolution\nnameserver 192.168.10.10" | sudo tee -a  /etc/resolver/drude
-  # Check configuration
-  # $ scutil --dns
-  # $ dig myproject.drude
-  #
   if $vconfig['vhost_proxy']
     config.vm.provision "shell", run: "always", privileged: false do |s|
       s.inline = <<-SCRIPT
-        echo "Starting system-wide HTTP reverse proxy bound to 192.168.10.10:80... "
+        echo "Starting system-wide HTTP/HTTPS reverse proxy on $1... "
         docker rm -f vhost-proxy > /dev/null 2>&1 || true
-        docker run -d --name vhost-proxy -p 192.168.10.10:80:80 -p 192.168.10.10:443:443 -v /var/run/docker.sock:/tmp/docker.sock \
-        blinkreaction/nginx-proxy@sha256:54b17e5298e6f6c1d442c3070f9c53f6250898da097f59786e4bfef8e77863df > /dev/null
-
-        echo "Starting system-wide DNS service bound to 192.168.10.10:53... "
-        docker rm -f dns > /dev/null 2>&1 || true
-        docker run -d --name dns -p 192.168.10.10:53:53/udp --cap-add=NET_ADMIN \
-        andyshinn/dnsmasq@sha256:86f83680aba9876e9822e5b28774026fce087f45c4cf007783c5a31ff5c9a5dd \
-        -A /drude/192.168.10.10 > /dev/null
+        docker run -d --name vhost-proxy -p $1:80:80 -p $1:443:443 -v /var/run/docker.sock:/tmp/docker.sock \
+        blinkreaction/nginx-proxy@sha256:04d1790726a252d6d2f89c5702533e174c284fd34dcb5599d6881da34354f30e > /dev/null
       SCRIPT
+      s.args = "#{box_ip}"
     end
   end
-
+  
   # Automatically start containers if docker-compose.yml is present in the current directory.
   # See "autostart" property in vagrant.yml.
   if File.file?('./docker-compose.yml') && $vconfig['compose_autostart']

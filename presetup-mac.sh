@@ -24,6 +24,9 @@ brew update
 # VirtualBox installation
 echo -e "${green}Installing virtualbox...${NC}"
 brew cask install virtualbox
+# Kill the default adapter and DHCP server to avoid network issues down the road
+VBoxManage dhcpserver remove --netname HostInterfaceNetworking-vboxnet0
+VBoxManage hostonlyif remove vboxnet0
 
 # Vagrant installation
 echo -e "${green}Installing vagrant...${NC}"
