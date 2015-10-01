@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1 (2015-10-01)
+
+- Fix path to VBoxManage on Windows
+
 ## 1.1.0 (2015-09-30)
 
 - Switch to blinkreaction/boot2docker base box v1.8.2
