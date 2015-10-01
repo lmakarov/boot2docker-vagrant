@@ -3,9 +3,10 @@ REM Installing Chocolatey
 
 REM Installing virtualbox
 choco install virtualbox -y
+
 REM Killing the default adapter and DHCP server to avoid network issues down the road
-VBoxManage dhcpserver remove --netname "HostInterfaceNetworking-VirtualBox Host-Only Ethernet Adapter"
-VBoxManage hostonlyif remove "VirtualBox Host-Only Ethernet Adapter"
+"C:\Program Files\Oracle\VirtualBox\VBoxManage" dhcpserver remove --netname "HostInterfaceNetworking-VirtualBox Host-Only Ethernet Adapter"
+"C:\Program Files\Oracle\VirtualBox\VBoxManage" hostonlyif remove "VirtualBox Host-Only Ethernet Adapter"
 
 REM Installing vagrant
 choco install vagrant -y
