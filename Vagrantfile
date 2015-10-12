@@ -125,6 +125,13 @@ Vagrant.configure("2") do |config|
       mount_options: ["nolock", "vers=3", "tcp"]
     config.nfs.map_uid = Process.uid
     config.nfs.map_gid = Process.gid
+  # nfs: better performance on Mac
+  elsif synced_folders['type'] == "nfs2"  && !is_windows
+    config.vm.synced_folder vagrant_root, vagrant_mount_point,
+      type: "nfs",
+      mount_options: ["nolock", "noacl", "nocto", "noatime", "nodiratime", "vers=3", "tcp"]
+    config.nfs.map_uid = Process.uid
+    config.nfs.map_gid = Process.gid
   # smb: better performance on Windows. Requires Vagrant to be run with admin privileges.
   elsif synced_folders['type'] == "smb" && is_windows
     config.vm.synced_folder vagrant_root, vagrant_mount_point,
