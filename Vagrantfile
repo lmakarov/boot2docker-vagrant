@@ -238,7 +238,7 @@ Vagrant.configure("2") do |config|
       docker rm -f dns > /dev/null 2>&1 || true
       docker run -d --name dns -p $1:53:53/udp -p 172.17.42.1:53:53/udp --cap-add=NET_ADMIN \
       -v /var/run/docker.sock:/var/run/docker.sock \
-      blinkreaction/dns-discovery@sha256:4c0bc8f1abca904020459c6196cc547d0783d921abcf1495fdffe2e862dfdf86 > /dev/null
+      blinkreaction/dns-discovery:stable > /dev/null
     SCRIPT
     s.args = "#{box_ip}"
   end
@@ -251,7 +251,7 @@ Vagrant.configure("2") do |config|
         echo "Starting system-wide HTTP/HTTPS reverse proxy on $1... "
         docker rm -f vhost-proxy > /dev/null 2>&1 || true
         docker run -d --name vhost-proxy -p $1:80:80 -p $1:443:443 -v /var/run/docker.sock:/tmp/docker.sock \
-        blinkreaction/nginx-proxy@sha256:04d1790726a252d6d2f89c5702533e174c284fd34dcb5599d6881da34354f30e > /dev/null
+        blinkreaction/nginx-proxy:stable > /dev/null
       SCRIPT
       s.args = "#{box_ip}"
     end
