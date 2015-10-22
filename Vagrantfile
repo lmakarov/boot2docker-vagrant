@@ -237,7 +237,7 @@ Vagrant.configure("2") do |config|
       echo "Starting system-wide DNS service... "
       docker rm -f dns > /dev/null 2>&1 || true
       docker run -d --name dns -p $1:53:53/udp -p 172.17.42.1:53:53/udp --cap-add=NET_ADMIN \
-      -v /var/run/docker.sock:/var/run/docker.sock \
+      --dns 8.8.8.8 -v /var/run/docker.sock:/var/run/docker.sock \
       blinkreaction/dns-discovery:stable > /dev/null
     SCRIPT
     s.args = "#{box_ip}"
