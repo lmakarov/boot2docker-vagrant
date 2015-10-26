@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.0 (2015-10-26)
+
+- Switched to new base box version 1.8.3
+  - Docker v1.8.3, Docker Compose v1.4.2
+  - SFTP support (user: docker, password: tcuser or using vagrants insecure key)
+- Added nfs2 synced folders option with optimized NFS settings (experimental and default)
+- Switched to vhost-proxy [v1.1.0](https://github.com/blinkreaction/docker-nginx-proxy/releases/tag/v1.1.0) and dns-discovery [v1.0.0](https://github.com/blinkreaction/docker-dns-discovery/releases/tag/v1.0.0) container images
+- Moved scripts to a subfolder
+- Fixed Version requirements for Vagrant and Virtual Box
+
 ## 1.1.1 (2015-10-01)
 
 - Fix path to VBoxManage on Windows

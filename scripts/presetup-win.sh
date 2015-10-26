@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DOCKER_VERSION=1.8.1
-DOCKER_COMPOSE_VERSION=1.4.0
+DOCKER_VERSION=1.8.3
+DOCKER_COMPOSE_VERSION=1.4.2
 
 # For testing
 if [ ! $B2D_BRANCH == "" ]; then
@@ -11,8 +11,8 @@ else
 fi
 
 # Install prerequisites via choco (virtualbox and vagrant)
-curl -L https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${B2D_BRANCH}/presetup-win.cmd -o $WINDIR/Temp/presetup-win.cmd
-curl -L https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${B2D_BRANCH}/presetup-win.vbs -o $WINDIR/Temp/presetup-win.vbs
+curl -L https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${B2D_BRANCH}/scripts/presetup-win.cmd -o $WINDIR/Temp/presetup-win.cmd
+curl -L https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${B2D_BRANCH}/scripts/presetup-win.vbs -o $WINDIR/Temp/presetup-win.vbs
 echo "Setup needs administrator privileges to contiue..."
 cscript $WINDIR/Temp/presetup-win.vbs
 

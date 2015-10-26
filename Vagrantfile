@@ -92,13 +92,13 @@ end
 ######################################################################
 
 # Vagrant Box Configuration #
-Vagrant.require_version ">= 1.6.3"
+Vagrant.require_version ">= 1.7.3"
 
 Vagrant.configure("2") do |config|
   config.vm.define "boot2docker"
 
   config.vm.box = "blinkreaction/boot2docker"
-  config.vm.box_version = "1.8.2"
+  config.vm.box_version = "1.8.3"
   config.vm.box_check_update = true
 
   ## Network ##
@@ -123,6 +123,13 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder vagrant_root, vagrant_mount_point,
       type: "nfs",
       mount_options: ["nolock", "vers=3", "tcp"]
+    config.nfs.map_uid = Process.uid
+    config.nfs.map_gid = Process.gid
+  # nfs2: better performance on Mac, experimental
+  elsif synced_folders['type'] == "nfs2"  && !is_windows
+    config.vm.synced_folder vagrant_root, vagrant_mount_point,
+      type: "nfs",
+      mount_options: ["nolock", "noacl", "nocto", "noatime", "nodiratime", "vers=3", "tcp"]
     config.nfs.map_uid = Process.uid
     config.nfs.map_gid = Process.gid
   # smb: better performance on Windows. Requires Vagrant to be run with admin privileges.
@@ -225,26 +232,28 @@ Vagrant.configure("2") do |config|
   end
 
   # System-wide dnsmasq service for DNS discovery and name resolution
+  # Image: blinkreaction/dns-discovery v1.0.0
   config.vm.provision "shell", run: "always", privileged: false do |s|
     s.inline = <<-SCRIPT
       echo "Starting system-wide DNS service... "
       docker rm -f dns > /dev/null 2>&1 || true
       docker run -d --name dns -p $1:53:53/udp -p 172.17.42.1:53:53/udp --cap-add=NET_ADMIN \
-      -v /var/run/docker.sock:/var/run/docker.sock \
-      blinkreaction/dns-discovery@sha256:4c0bc8f1abca904020459c6196cc547d0783d921abcf1495fdffe2e862dfdf86 > /dev/null
+      --dns 8.8.8.8 -v /var/run/docker.sock:/var/run/docker.sock \
+      blinkreaction/dns-discovery@sha256:f1322ab6d5496c8587e59e47b0a8b1479a444098b40ddd598e85e9ab4ce146d8 > /dev/null
     SCRIPT
     s.args = "#{box_ip}"
   end
 
   # System-wide vhost-proxy service.
   # Containers must define a "VIRTUAL_HOST" environment variable to be recognized and routed by the vhost-proxy.
+  # Image: blinkreaction/nginx-proxy v1.1.0
   if $vconfig['vhost_proxy']
     config.vm.provision "shell", run: "always", privileged: false do |s|
       s.inline = <<-SCRIPT
         echo "Starting system-wide HTTP/HTTPS reverse proxy on $1... "
         docker rm -f vhost-proxy > /dev/null 2>&1 || true
         docker run -d --name vhost-proxy -p $1:80:80 -p $1:443:443 -v /var/run/docker.sock:/tmp/docker.sock \
-        blinkreaction/nginx-proxy@sha256:04d1790726a252d6d2f89c5702533e174c284fd34dcb5599d6881da34354f30e > /dev/null
+        blinkreaction/nginx-proxy@sha256:1707c0fd2fa4f0e98a656f748a4edb8a04578e9dc63115acc23a05225f151e04 > /dev/null
       SCRIPT
       s.args = "#{box_ip}"
     end
