@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1 (2015-10-28)
+
+- Update path to shell scripts in README.md
+
 ## 1.2.0 (2015-10-26)
 
 - Switched to new base box version 1.8.3
