@@ -20,7 +20,7 @@ Make sure to stop all VirtualBox VMs prior to performing updates.
 
 Prerequisites are installed using **brew/cask** (brew and cask will be installed if missing).
 
-    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/presetup-mac.sh)
+    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/scripts/presetup-mac.sh)
 
 **Windows**
 
@@ -34,7 +34,7 @@ Prerequisites are installed using **babun** and **chocolatey** (chocolatey will 
 2. Run the following in babun
 
     ```
-    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/presetup-win.sh)
+    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/scripts/presetup-win.sh)
     ```
 
 <a name="setup"></a>
@@ -44,7 +44,7 @@ Prerequisites are installed using **babun** and **chocolatey** (chocolatey will 
 
 Run the following command within your `<Projects>` (shared boo2docker VM for multiple projects, recommended) or `<Project>` (dedicated boot2docker VM) directory:
 
-    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/setup.sh)
+    bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/scripts/setup.sh)
 
 ### Manual installation (Mac and Windows)
 
