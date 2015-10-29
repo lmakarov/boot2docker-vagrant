@@ -27,6 +27,9 @@ pip install virtualenv
 curl -skS https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python
 pip install -U docker-compose==$DOCKER_COMPOSE_VERSION
 
+# Install winpty
+curl -s https://raw.githubusercontent.com/tiangolo/babun-docker/master/setup.sh | source /dev/stdin
+
 # Git settings
 echo "Adjusting git defaults"
 git config --global core.autocrlf input
