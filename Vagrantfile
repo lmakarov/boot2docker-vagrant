@@ -2,7 +2,7 @@
 @ui = Vagrant::UI::Colored.new
 
 # Install required plugins if not present.
-required_plugins = %w(vagrant-triggers)
+required_plugins = ["vagrant-triggers", "vagrant-gatling-rsync"]
 required_plugins.each do |plugin|
   need_restart = false
   unless Vagrant.has_plugin? plugin
@@ -163,17 +163,44 @@ Vagrant.configure("2") do |config|
       SCRIPT
       s.args = "#{vagrant_folder_name} #{vagrant_mount_point} #{$vconfig['synced_folders']['smb_username']} #{$vconfig['synced_folders']['smb_password']} #{host_ip}"
     end
-  # rsync: the best performance, cross-platform platform, one-way only. Run `vagrant rsync-auto` to start auto sync.
+  # rsync: the best performance, cross-platform platform, one-way only.
   elsif synced_folders['type'] == "rsync"
+    # Construct and array for rsync_exclude
+    rsync_exclude = []
+    unless synced_folders['rsync_exclude'].nil?
+      for item in synced_folders['rsync_exclude'] do
+        rsync_exclude.push(item)
+      end
+    end
+
     # Only sync explicitly listed folders.
-    if (synced_folders['folders']).nil?
-      @ui.warn "WARNING: 'folders' list cannot be empty when using 'rsync' sync type. Please check your vagrant.yml file."
+    if (synced_folders['rsync_folders']).nil?
+      @ui.error "ERROR: 'folders' list cannot be empty when using 'rsync' sync type. Please check your vagrant.yml file."
+      exit
     else
-      for synced_folder in synced_folders['folders'] do
+      for synced_folder in synced_folders['rsync_folders'] do
         config.vm.synced_folder "#{vagrant_root}/#{synced_folder}", "#{vagrant_mount_point}/#{synced_folder}",
           type: "rsync",
-          rsync__exclude: ".git/",
           rsync__args: ["--verbose", "--archive", "--delete", "-z", "--chmod=ugo=rwX"]
+          rsync__exclude: rsync_exclude,
+      end
+    end
+    # Configure vagrant-gatling-rsync
+    config.gatling.rsync_on_startup = false
+    config.gatling.latency = synced_folders['rsync_latency']
+    config.gatling.time_format = "%H:%M:%S"
+
+    # Launch gatling-rsync-auto in the background
+    if synced_folders['rsync_auto']
+      [:up, :reload].each do |trigger|
+        config.trigger.after trigger do
+          info "Starting background rsync-auto process..."
+          info "Run 'tail -f #{vagrant_root}/rsync.log' to see logs."
+          # Kill the old sync process
+          run "bash -c \"kill $(ps aux | grep 'ruby.*vagrant gatling-rsync-auto' | grep -v grep | awk '{ print $2 }') >/dev/null 2>&1 || true\""
+          # Start a new sync process in background
+          run 'bash -c "vagrant gatling-rsync-auto > rsync.log &"'
+        end
       end
     end
   # vboxsf: reliable, cross-platform and terribly slow performance

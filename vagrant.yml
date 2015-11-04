@@ -19,10 +19,18 @@ synced_folders:
   # List of folders to sync with rsync. These should be subfolder names within the <Projects> folder (e.g. "drupal7")
   # Uncomment and add folders per the example below as neccessary.
   # Note: you'll have to run `vagrant rsync-auto` in the background to keep the files in sync as you make changes
-  folders:
+  rsync_folders:
     #- "projectA"  # rsync projectA folder
     #- "projectB"  # rsync projectB folder
     #- ""  # rsync the whole <Projects> folder. WARNING: don't do this if your <Projects> folder is big.
+  # Coalescing threshold in seconds for https://github.com/smerrill/vagrant-gatling-rsync
+  rsync_latency: 0.5
+  # Start rsync-auto automatically
+  rsync_auto: true
+  # Patterns excluded from rsync. Passed as --exclude <pattern> to rsync.
+  rsync_exclude:
+    - ".git/"
+    #- "files/"
 
 # VirtualBox VM settings
 v.gui: false  # Set to true for debugging. Will unhide VM's primary console screen.
