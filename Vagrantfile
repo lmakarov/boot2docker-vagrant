@@ -209,6 +209,20 @@ Vagrant.configure("2") do |config|
       config.vm.synced_folder vagrant_root, vagrant_mount_point
   end
 
+  # Individual mounts
+  unless synced_folders['individual_mounts'].nil?
+    for synced_folder in synced_folders['individual_mounts'] do
+      if synced_folder['type'] == 'vboxsf'
+        config.vm.synced_folder synced_folder['location'], synced_folder['mount'],
+          mount_options: [synced_folder['options']]
+      elsif synced_folder['type'] == 'nfs'
+        config.vm.synced_folder synced_folder['location'], synced_folder['mount'],
+          type: "nfs",
+          mount_options: [synced_folder['options']]
+      end
+    end
+  end
+
   # Make host home directory available to containers in /.home
   if File.directory?(File.expand_path("~"))
     config.vm.synced_folder "~", "/.home"

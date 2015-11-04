@@ -31,6 +31,18 @@ synced_folders:
   rsync_exclude:
     - ".git/"
     #- "files/"
+  # List of folders to mount individually. This is really only needed in the case where you want a container to write
+  # something back to the Host OS. If that describes your situation, use type = vboxsf. If you just want more control
+  # over what's mounted, go with type = nfs, which is much faster.
+  individual_mounts:
+    #- location: './logs'
+    #  mount: '/home/docker/logs'
+    #  type: 'vboxsf'
+    #  options: 'uid=501,gid=20'
+    #- location: './logs'
+    #  mount: '/home/docker/logs'
+    #  type: 'nfs'
+    #  options: 'nolock,vers=3,tcp'
 
 # VirtualBox VM settings
 v.gui: false  # Set to true for debugging. Will unhide VM's primary console screen.
