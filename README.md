@@ -3,7 +3,7 @@ Boot2docker Vagrant box for optimized Docker and Docker Compose use on Mac and W
 
 ## What is this?
 This is a temporary solution to achieve better performance with synced folders and docker data volumes on Mac and Windows.  
-The stock boot2docker currently mounts host volumes via the default VirtualBox Guest Additions (vboxfs) mode, which is terribly slow. Much better performance can be achieved with NFS, SMB or rsync.
+The stock boot2docker currently mounts host volumes via the default VirtualBox Guest Additions (vboxsf) mode, which is terribly slow. Much better performance can be achieved with NFS, SMB or rsync.
 
 <a name="requirements"></a>
 ## Prerequisites
@@ -69,7 +69,7 @@ Run the following command within your `<Projects>` (shared boo2docker VM for mul
 ## Synced Folders options
 
 This box supports all [Synced Folder](http://docs.vagrantup.com/v2/synced-folders/) options provided by Vagrant:
-- vboxfs - native VirtualBox method, cross-platform, convenient and reliable, terribly slow
+- vboxsf - native VirtualBox method, cross-platform, convenient and reliable, terribly slow
 - NFS - better performance and convenience for Mac
 - SMB - better performance and convenience for Windows (on par with NFS on Mac)
 - rsync - best performance, cross-platform, one-way only
@@ -89,7 +89,7 @@ If you use rsync, you'll have to run `vagrant rsync-auto` in a separate terminal
 ### Mac
 
 Option comparison for Mac Drupal developers (using `time drush si -y` as a test case):
-- vboxfs: 6x (slowest)
+- vboxsf: 6x (slowest)
 - NFS: 1.3x
 - rsync: 1x (fastest)
 
@@ -99,7 +99,7 @@ NFS provides good performance and convenience. It is the default and recommended
 ### Windows
 
 Option comparison for Windows Drupal developers (using `time drush si -y` as a test case):
-- vboxfs: 5x (slowest)
+- vboxsf: 5x (slowest)
 - SMB: 2x
 - rsync: 1x (fastest)
 

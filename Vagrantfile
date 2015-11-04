@@ -176,7 +176,7 @@ Vagrant.configure("2") do |config|
           rsync__args: ["--verbose", "--archive", "--delete", "-z", "--chmod=ugo=rwX"]
       end
     end
-  # vboxfs: reliable, cross-platform and terribly slow performance
+  # vboxsf: reliable, cross-platform and terribly slow performance
   else
     @ui.warn "WARNING: defaulting to the slowest folder sync option (vboxfs)"
       config.vm.synced_folder vagrant_root, vagrant_mount_point,
