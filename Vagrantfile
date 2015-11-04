@@ -181,8 +181,8 @@ Vagrant.configure("2") do |config|
       for synced_folder in synced_folders['rsync_folders'] do
         config.vm.synced_folder "#{vagrant_root}/#{synced_folder}", "#{vagrant_mount_point}/#{synced_folder}",
           type: "rsync",
-          rsync__args: ["--verbose", "--archive", "--delete", "-z", "--chmod=ugo=rwX"]
           rsync__exclude: rsync_exclude,
+          rsync__args: ["--archive", "--delete", "--compress", "--whole-file"]
       end
     end
     # Configure vagrant-gatling-rsync
