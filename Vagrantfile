@@ -205,9 +205,8 @@ Vagrant.configure("2") do |config|
     end
   # vboxsf: reliable, cross-platform and terribly slow performance
   else
-    @ui.warn "WARNING: defaulting to the slowest folder sync option (vboxfs)"
-      config.vm.synced_folder vagrant_root, vagrant_mount_point,
-        mount_options: ["dmode=770", "fmode=660"]
+    @ui.warn "WARNING: defaulting to the slowest folder sync option (vboxsf)"
+      config.vm.synced_folder vagrant_root, vagrant_mount_point
   end
 
   # Make host home directory available to containers in /.home
