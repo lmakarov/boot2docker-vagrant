@@ -5,7 +5,7 @@ synced_folders:
   # smb: better performance on Windows. Requires Vagrant to be run with admin privileges.
   # smb2: experimental, does not require running vagrant as admin.
   # rsync: the best performance, cross-platform platform, one-way only. Run `vagrant rsync-auto` to start auto sync.
-  #   When using rsync sync type the "folders" list below is mandatory.
+  #   When using rsync sync type the "rsync_folders" list below is mandatory.
   # vboxsf (or leave empty): best compatibility and ease of setup, but poor performance.
   type: 'nfs2'
   # smb_user, smb_password - The username and password used for authentication to mount the SMB mount.
@@ -25,7 +25,7 @@ synced_folders:
     #- ""  # rsync the whole <Projects> folder. WARNING: don't do this if your <Projects> folder is big.
   # Coalescing threshold in seconds for https://github.com/smerrill/vagrant-gatling-rsync
   rsync_latency: 0.5
-  # Start rsync-auto automatically
+  # Start rsync-auto automatically (Mac only for now)
   rsync_auto: true
   # Patterns excluded from rsync. Passed as --exclude <pattern> to rsync.
   rsync_exclude:
