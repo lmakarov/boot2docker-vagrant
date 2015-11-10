@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DOCKER_VERSION=1.8.3
-DOCKER_COMPOSE_VERSION=1.4.2
+DOCKER_VERSION=1.9.0
+DOCKER_COMPOSE_VERSION=1.5.0
 
 # For testing
 if [ ! $B2D_BRANCH == "" ]; then
