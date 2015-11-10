@@ -279,6 +279,17 @@ Vagrant.configure("2") do |config|
     SCRIPT
   end
 
+  # Let users provide credentials to log in to Docker Hub.
+  if $vconfig['docker_registry_auth']
+    config.vm.provision "trigger", :option => "value" do |trigger|
+      trigger.fire do
+        info 'Authenticating with the Docker registry...'
+        system "docker -H localhost:2375 login"
+      end
+    end
+    config.vm.provision "file", source: "~/.docker/config.json", destination: ".docker/config.json"
+  end
+
   # System-wide dnsmasq service for DNS discovery and name resolution
   # Image: blinkreaction/dns-discovery v1.0.0
   config.vm.provision "shell", run: "always", privileged: false do |s|

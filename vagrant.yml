@@ -60,6 +60,11 @@ ip:
     #- 192.168.10.12
     #- 192.168.10.13
 
+# Registry authentication. If your machine uses a private image, you must log in
+# to the registry before running docker-machine up. This is especially useful
+# when combined with compose_autostart: true.
+docker_registry_auth: false
+
 # Automatically start containers if docker-compose.yml is present in the current directory (default: false).
 compose_autostart: false
 
