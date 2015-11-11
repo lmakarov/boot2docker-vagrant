@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.3.0 (2015-11-10)
+
+- Version updates
+  - boot2docker base box v1.9.0
+  - Docker v1.9.0
+  - Docker Compose v1.5.0 (now installed as a binary on Windows)
+- Default to **nfs2** on Mac and **smb2** on Windows
+- rsync
+  - Switching to vagrant-gatling-rsync for better rsync-auto performance
+  - Auto start gatling-rsync-auto **in background** (Mac only)
+- Revised vboxsf, smb and rsync settings
+- Fixed vagrant user account expiration (smb2 option)
+- Added a way to define individual mounts
+- Added "group=system" label to dns and vhost-proxy containers
+- Added support for authentication against docker hub
+- Fixed typo: vboxfs => vboxsf
+
 ## 1.2.1 (2015-10-28)
 
 - Update path to shell scripts in README.md
