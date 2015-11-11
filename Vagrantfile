@@ -2,7 +2,7 @@
 @ui = Vagrant::UI::Colored.new
 
 # Install required plugins if not present.
-required_plugins = %w(vagrant-triggers)
+required_plugins = ["vagrant-triggers", "vagrant-gatling-rsync"]
 required_plugins.each do |plugin|
   need_restart = false
   unless Vagrant.has_plugin? plugin
@@ -52,7 +52,7 @@ if is_windows
     smb_username = $vconfig['synced_folders']['smb_username']
     smb_password = $vconfig['synced_folders']['smb_password']
     
-    command_user = "net user #{smb_username} || net user #{smb_username} #{smb_password} /add"
+    command_user = "net user #{smb_username} || ( net user #{smb_username} #{smb_password} /add && WMIC USERACCOUNT WHERE \"Name='vagrant'\" SET PasswordExpires=FALSE )"
     @ui.info "Adding vagrant user"
     windows_elevated_shell command_user
 
@@ -98,7 +98,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "boot2docker"
 
   config.vm.box = "blinkreaction/boot2docker"
-  config.vm.box_version = "1.8.3"
+  config.vm.box_version = "1.9.0"
   config.vm.box_check_update = true
 
   ## Network ##
@@ -118,28 +118,32 @@ Vagrant.configure("2") do |config|
  ## Synced folders configuration ##
 
   synced_folders = $vconfig['synced_folders']
-  # nfs: better performance on Mac
+  # nfs: Better performance on Mac
   if synced_folders['type'] == "nfs"  && !is_windows
+    @ui.success "Using nfs synced folder option"
     config.vm.synced_folder vagrant_root, vagrant_mount_point,
       type: "nfs",
       mount_options: ["nolock", "vers=3", "tcp"]
     config.nfs.map_uid = Process.uid
     config.nfs.map_gid = Process.gid
-  # nfs2: better performance on Mac, experimental
-  elsif synced_folders['type'] == "nfs2"  && !is_windows
+  # nfs2: Optimized NFS settings for even better performance on Mac, experimental
+  elsif ( synced_folders['type'] == "nfs2" || synced_folders['type'] == "default" )  && !is_windows
+    @ui.success "Using nfs2 synced folder option"
     config.vm.synced_folder vagrant_root, vagrant_mount_point,
       type: "nfs",
       mount_options: ["nolock", "noacl", "nocto", "noatime", "nodiratime", "vers=3", "tcp"]
     config.nfs.map_uid = Process.uid
     config.nfs.map_gid = Process.gid
-  # smb: better performance on Windows. Requires Vagrant to be run with admin privileges.
+  # smb: Better performance on Windows. Requires Vagrant to be run with admin privileges.
   elsif synced_folders['type'] == "smb" && is_windows
+    @ui.success "Using smb synced folder option"
     config.vm.synced_folder vagrant_root, vagrant_mount_point,
       type: "smb",
       smb_username: synced_folders['smb_username'],
       smb_password: synced_folders['smb_password']
-  # smb2: experimental, does not require running vagrant as admin.
-  elsif synced_folders['type'] == "smb2" && is_windows
+  # smb2: Better performance on Windows. Does not require running vagrant as admin.
+  elsif ( synced_folders['type'] == "smb2" || synced_folders['type'] == "default" ) && is_windows
+    @ui.success "Using smb2 synced folder option"
 
     if $vconfig['synced_folders']['smb2_auto']
       # Create the share before 'up'.
@@ -159,28 +163,82 @@ Vagrant.configure("2") do |config|
     config.vm.provision "shell", run: "always" do |s|
       s.inline = <<-SCRIPT
         mkdir -p vagrant $2
-        mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,sec=ntlm,username=$3,pass=$4,dir_mode=0755,file_mode=0644 //$5/$1 $2
+        mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,sec=ntlm,username=$3,pass=$4,dir_mode=0777,file_mode=0666 //$5/$1 $2
       SCRIPT
       s.args = "#{vagrant_folder_name} #{vagrant_mount_point} #{$vconfig['synced_folders']['smb_username']} #{$vconfig['synced_folders']['smb_password']} #{host_ip}"
     end
-  # rsync: the best performance, cross-platform platform, one-way only. Run `vagrant rsync-auto` to start auto sync.
+  # rsync: the best performance, cross-platform platform, one-way only.
   elsif synced_folders['type'] == "rsync"
-    # Only sync explicitly listed folders.
-    if (synced_folders['folders']).nil?
-      @ui.warn "WARNING: 'folders' list cannot be empty when using 'rsync' sync type. Please check your vagrant.yml file."
-    else
-      for synced_folder in synced_folders['folders'] do
-        config.vm.synced_folder "#{vagrant_root}/#{synced_folder}", "#{vagrant_mount_point}/#{synced_folder}",
-          type: "rsync",
-          rsync__exclude: ".git/",
-          rsync__args: ["--verbose", "--archive", "--delete", "-z", "--chmod=ugo=rwX"]
+    @ui.success "Using rsync synced folder option"
+
+    # Construct and array for rsync_exclude
+    rsync_exclude = []
+    unless synced_folders['rsync_exclude'].nil?
+      for item in synced_folders['rsync_exclude'] do
+        rsync_exclude.push(item)
       end
     end
-  # vboxfs: reliable, cross-platform and terribly slow performance
-  else
-    @ui.warn "WARNING: defaulting to the slowest folder sync option (vboxfs)"
-      config.vm.synced_folder vagrant_root, vagrant_mount_point,
-        mount_options: ["dmode=770", "fmode=660"]
+
+    # Only sync explicitly listed folders.
+    if synced_folders['rsync_folders'].nil?
+      @ui.error "ERROR: 'folders' list cannot be empty when using 'rsync' sync type. Please check your vagrant.yml file."
+      exit
+    else
+      for synced_folder in synced_folders['rsync_folders'] do
+        config.vm.synced_folder "#{vagrant_root}/#{synced_folder}", "#{vagrant_mount_point}/#{synced_folder}",
+          type: "rsync",
+          rsync__exclude: rsync_exclude,
+          rsync__args: ["--archive", "--delete", "--compress", "--whole-file"]
+      end
+    end
+    # Configure vagrant-gatling-rsync
+    config.gatling.rsync_on_startup = false
+    config.gatling.latency = synced_folders['rsync_latency']
+    config.gatling.time_format = "%H:%M:%S"
+
+    # Launch gatling-rsync-auto in the background
+    if synced_folders['rsync_auto'] && !is_windows
+      [:up, :reload, :resume].each do |trigger|
+        config.trigger.after trigger do
+          success "Starting background rsync-auto process..."
+          info "Run 'tail -f #{vagrant_root}/rsync.log' to see logs."
+          # Kill the old sync process
+          `kill $(pgrep -f rsync-auto) > /dev/null 2>&1 || true`
+          # Start a new sync process in background
+          `vagrant gatling-rsync-auto >> rsync.log &`
+        end
+      end
+      [:halt, :suspend, :destroy].each do |trigger|
+        config.trigger.before trigger do
+          # Kill rsync-auto process
+          success "Stopping background rsync-auto process..."
+          `kill $(pgrep -f rsync-auto) > /dev/null 2>&1 || true`
+          `rm -f rsync.log`
+        end
+      end
+    end
+  # vboxsf: reliable, cross-platform and terribly slow performance
+  elsif synced_folders['type'] == "vboxsf"
+    @ui.warn "WARNING: Using the SLOWEST folder sync option (vboxsf)"
+    config.vm.synced_folder vagrant_root, vagrant_mount_point
+  # Warn if neither synced_folder not individual_mounts is enabled
+  elsif synced_folders['individual_mounts'].nil?
+    @ui.error "ERROR: Synced folders not enabled or misconfigured. The VM will not have access to files on the host."
+  end
+
+  # Individual mounts
+  unless synced_folders['individual_mounts'].nil?
+    @ui.success "Using individual_mounts synced folder option"
+    for synced_folder in synced_folders['individual_mounts'] do
+      if synced_folder['type'] == 'vboxsf'
+        config.vm.synced_folder synced_folder['location'], synced_folder['mount'],
+          mount_options: [synced_folder['options']]
+      elsif synced_folder['type'] == 'nfs'
+        config.vm.synced_folder synced_folder['location'], synced_folder['mount'],
+          type: "nfs",
+          mount_options: [synced_folder['options']]
+      end
+    end
   end
 
   # Make host home directory available to containers in /.home
@@ -231,14 +289,26 @@ Vagrant.configure("2") do |config|
     SCRIPT
   end
 
+  # Let users provide credentials to log in to Docker Hub.
+  if $vconfig['docker_registry_auth']
+    config.vm.provision "trigger", :option => "value" do |trigger|
+      trigger.fire do
+        info 'Authenticating with the Docker registry...'
+        system "docker -H localhost:2375 login"
+      end
+    end
+    config.vm.provision "file", source: "~/.docker/config.json", destination: ".docker/config.json"
+  end
+
   # System-wide dnsmasq service for DNS discovery and name resolution
   # Image: blinkreaction/dns-discovery v1.0.0
   config.vm.provision "shell", run: "always", privileged: false do |s|
     s.inline = <<-SCRIPT
       echo "Starting system-wide DNS service... "
       docker rm -f dns > /dev/null 2>&1 || true
-      docker run -d --name dns -p $1:53:53/udp -p 172.17.42.1:53:53/udp --cap-add=NET_ADMIN \
-      --dns 8.8.8.8 -v /var/run/docker.sock:/var/run/docker.sock \
+      docker run -d --name dns --label "group=system" \
+      -p $1:53:53/udp -p 172.17.42.1:53:53/udp --cap-add=NET_ADMIN --dns 8.8.8.8 \
+      -v /var/run/docker.sock:/var/run/docker.sock \
       blinkreaction/dns-discovery@sha256:f1322ab6d5496c8587e59e47b0a8b1479a444098b40ddd598e85e9ab4ce146d8 > /dev/null
     SCRIPT
     s.args = "#{box_ip}"
@@ -252,7 +322,8 @@ Vagrant.configure("2") do |config|
       s.inline = <<-SCRIPT
         echo "Starting system-wide HTTP/HTTPS reverse proxy on $1... "
         docker rm -f vhost-proxy > /dev/null 2>&1 || true
-        docker run -d --name vhost-proxy -p $1:80:80 -p $1:443:443 -v /var/run/docker.sock:/tmp/docker.sock \
+        docker run -d --name vhost-proxy --label "group=system" -p $1:80:80 -p $1:443:443 \
+        -v /var/run/docker.sock:/tmp/docker.sock \
         blinkreaction/nginx-proxy@sha256:1707c0fd2fa4f0e98a656f748a4edb8a04578e9dc63115acc23a05225f151e04 > /dev/null
       SCRIPT
       s.args = "#{box_ip}"
