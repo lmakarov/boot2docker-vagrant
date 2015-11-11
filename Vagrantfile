@@ -52,7 +52,7 @@ if is_windows
     smb_username = $vconfig['synced_folders']['smb_username']
     smb_password = $vconfig['synced_folders']['smb_password']
     
-    command_user = "net user #{smb_username} || net user #{smb_username} #{smb_password} /add"
+    command_user = "net user #{smb_username} || ( net user #{smb_username} #{smb_password} /add && WMIC USERACCOUNT WHERE \"Name='vagrant'\" SET PasswordExpires=FALSE )"
     @ui.info "Adding vagrant user"
     windows_elevated_shell command_user
 
