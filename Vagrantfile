@@ -118,28 +118,32 @@ Vagrant.configure("2") do |config|
  ## Synced folders configuration ##
 
   synced_folders = $vconfig['synced_folders']
-  # nfs: better performance on Mac
+  # nfs: Better performance on Mac
   if synced_folders['type'] == "nfs"  && !is_windows
+    @ui.success "Using nfs synced folder option"
     config.vm.synced_folder vagrant_root, vagrant_mount_point,
       type: "nfs",
       mount_options: ["nolock", "vers=3", "tcp"]
     config.nfs.map_uid = Process.uid
     config.nfs.map_gid = Process.gid
-  # nfs2: better performance on Mac, experimental
-  elsif synced_folders['type'] == "nfs2"  && !is_windows
+  # nfs2: Optimized NFS settings for even better performance on Mac, experimental
+  elsif ( synced_folders['type'] == "nfs2" || synced_folders['type'] == "default" )  && !is_windows
+    @ui.success "Using nfs2 synced folder option"
     config.vm.synced_folder vagrant_root, vagrant_mount_point,
       type: "nfs",
       mount_options: ["nolock", "noacl", "nocto", "noatime", "nodiratime", "vers=3", "tcp"]
     config.nfs.map_uid = Process.uid
     config.nfs.map_gid = Process.gid
-  # smb: better performance on Windows. Requires Vagrant to be run with admin privileges.
+  # smb: Better performance on Windows. Requires Vagrant to be run with admin privileges.
   elsif synced_folders['type'] == "smb" && is_windows
+    @ui.success "Using smb synced folder option"
     config.vm.synced_folder vagrant_root, vagrant_mount_point,
       type: "smb",
       smb_username: synced_folders['smb_username'],
       smb_password: synced_folders['smb_password']
-  # smb2: experimental, does not require running vagrant as admin.
-  elsif synced_folders['type'] == "smb2" && is_windows
+  # smb2: Better performance on Windows. Does not require running vagrant as admin.
+  elsif ( synced_folders['type'] == "smb2" || synced_folders['type'] == "default" ) && is_windows
+    @ui.success "Using smb2 synced folder option"
 
     if $vconfig['synced_folders']['smb2_auto']
       # Create the share before 'up'.
@@ -165,6 +169,8 @@ Vagrant.configure("2") do |config|
     end
   # rsync: the best performance, cross-platform platform, one-way only.
   elsif synced_folders['type'] == "rsync"
+    @ui.success "Using rsync synced folder option"
+
     # Construct and array for rsync_exclude
     rsync_exclude = []
     unless synced_folders['rsync_exclude'].nil?
@@ -174,7 +180,7 @@ Vagrant.configure("2") do |config|
     end
 
     # Only sync explicitly listed folders.
-    if (synced_folders['rsync_folders']).nil?
+    if synced_folders['rsync_folders'].nil?
       @ui.error "ERROR: 'folders' list cannot be empty when using 'rsync' sync type. Please check your vagrant.yml file."
       exit
     else
@@ -212,13 +218,17 @@ Vagrant.configure("2") do |config|
       end
     end
   # vboxsf: reliable, cross-platform and terribly slow performance
-  else
-    @ui.warn "WARNING: defaulting to the slowest folder sync option (vboxsf)"
-      config.vm.synced_folder vagrant_root, vagrant_mount_point
+  elsif synced_folders['type'] == "vboxsf"
+    @ui.warn "WARNING: Using the SLOWEST folder sync option (vboxsf)"
+    config.vm.synced_folder vagrant_root, vagrant_mount_point
+  # Warn if neither synced_folder not individual_mounts is enabled
+  elsif synced_folders['individual_mounts'].nil?
+    @ui.error "ERROR: Synced folders not enabled or misconfigured. The VM will not have access to files on the host."
   end
 
   # Individual mounts
   unless synced_folders['individual_mounts'].nil?
+    @ui.success "Using individual_mounts synced folder option"
     for synced_folder in synced_folders['individual_mounts'] do
       if synced_folder['type'] == 'vboxsf'
         config.vm.synced_folder synced_folder['location'], synced_folder['mount'],
