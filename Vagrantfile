@@ -202,7 +202,7 @@ Vagrant.configure("2") do |config|
       [:up, :reload, :resume].each do |trigger|
         config.trigger.after trigger do
           success "Starting background rsync-auto process..."
-          info "Run 'tail -f #{vagrant_root}/rsync.log' to see logs."
+          info "Run 'tail -f #{vagrant_root}/rsync.log' to see rsync-auto logs."
           # Kill the old sync process
           `kill $(pgrep -f rsync-auto) > /dev/null 2>&1 || true`
           # Start a new sync process in background
