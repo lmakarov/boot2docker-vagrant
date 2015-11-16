@@ -18,7 +18,8 @@ is_windows = Vagrant::Util::Platform.windows?
 # Determine paths.
 vagrant_root = File.dirname(__FILE__)  # Vagrantfile location
 if is_windows
-  vagrant_mount_point = `cygpath #{vagrant_root}`.strip! # Remove trailing \n 
+  vagrant_mount_point = `cygpath #{vagrant_root}`.strip! # Remove trailing \n
+  vagrant_mount_point = vagrant_mount_point.gsub(/\/cygdrive/, '')  # Remove '/cygdrive' prefix
 else
   vagrant_mount_point = vagrant_root
 end
