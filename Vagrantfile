@@ -18,7 +18,8 @@ is_windows = Vagrant::Util::Platform.windows?
 # Determine paths.
 vagrant_root = File.dirname(__FILE__)  # Vagrantfile location
 if is_windows
-  vagrant_mount_point = `cygpath #{vagrant_root}`.strip! # Remove trailing \n 
+  vagrant_mount_point = `cygpath #{vagrant_root}`.strip! # Remove trailing \n
+  vagrant_mount_point = vagrant_mount_point.gsub(/\/cygdrive/, '')  # Remove '/cygdrive' prefix
 else
   vagrant_mount_point = vagrant_root
 end
@@ -163,7 +164,7 @@ Vagrant.configure("2") do |config|
     config.vm.provision "shell", run: "always" do |s|
       s.inline = <<-SCRIPT
         mkdir -p vagrant $2
-        mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,sec=ntlm,username=$3,pass=$4,dir_mode=0777,file_mode=0666 //$5/$1 $2
+        mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,sec=ntlm,username=$3,pass=$4,dir_mode=0777,file_mode=0777 //$5/$1 $2
       SCRIPT
       s.args = "#{vagrant_folder_name} #{vagrant_mount_point} #{$vconfig['synced_folders']['smb_username']} #{$vconfig['synced_folders']['smb_password']} #{host_ip}"
     end
@@ -201,7 +202,7 @@ Vagrant.configure("2") do |config|
       [:up, :reload, :resume].each do |trigger|
         config.trigger.after trigger do
           success "Starting background rsync-auto process..."
-          info "Run 'tail -f #{vagrant_root}/rsync.log' to see logs."
+          info "Run 'tail -f #{vagrant_root}/rsync.log' to see rsync-auto logs."
           # Kill the old sync process
           `kill $(pgrep -f rsync-auto) > /dev/null 2>&1 || true`
           # Start a new sync process in background
