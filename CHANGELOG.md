@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.1 (2015-11-16)
+
+- Remove /cygdrive prefix
+  - /cygdrive prefix was needed for docker-compose installed via pip. The native binary does not expect this prefix.
+- Give all permissions on files (777) on the smb mount
+  - Allows any script files to be executed
+
 ## 1.3.0 (2015-11-10)
 
 - Version updates
