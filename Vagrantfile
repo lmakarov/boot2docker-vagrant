@@ -132,7 +132,7 @@ Vagrant.configure("2") do |config|
     @ui.success "Using nfs2 synced folder option"
     config.vm.synced_folder vagrant_root, vagrant_mount_point,
       type: "nfs",
-      mount_options: ["nolock", "noacl", "nocto", "noatime", "nodiratime", "vers=3", "tcp"]
+      mount_options: ["nolock", "noacl", "nocto", "noatime", "nodiratime", "vers=3", "tcp", "actimeo=2"]
     config.nfs.map_uid = Process.uid
     config.nfs.map_gid = Process.gid
   # smb: Better performance on Windows. Requires Vagrant to be run with admin privileges.
