@@ -13,10 +13,6 @@ NC='\033[0m'
 echo -e "${green}Installing Homebrew...${NC}"
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-# Cask installation
-echo -e "${green}Installing Cask...${NC}"
-brew install caskroom/cask/brew-cask
-
 # Update brew formulae
 echo -e "${green}Updating brew formulae...${NC}"
 brew update
