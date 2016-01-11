@@ -24,6 +24,13 @@ chmod +x /usr/local/bin/docker
 curl -L https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-Windows-x86_64.exe > /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
+# Install winpty (workaround for "cannot enable tty mode on non tty input")
+curl -L https://github.com/rprichard/winpty/releases/download/0.2.1/winpty-0.2.1-cygwin-2.3.0-ia32.tar.gz -o winpty.tar.gz
+tar zxf winpty.tar.gz
+cp -R winpty-0.2.1-cygwin-2.3.0-ia32/bin $CYGWIN_HOME
+rm -f winpty.tar.gz
+rm -rf winpty-0.2.1-cygwin-2.3.0-ia32
+
 # Git settings
 echo "Adjusting git defaults"
 git config --global core.autocrlf input
