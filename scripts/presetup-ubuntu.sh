@@ -36,13 +36,13 @@ if [[ $lsb_dist != 'Ubuntu' || $lsb_release < '14.04' ]]; then
 	exit 1
 fi
 
-echo-green "Installing Docker..."
+echo-green "Installing Docker v${DOCKER_VERSION}..."
 curl -sSL https://get.docker.com/ | sh && \
 sudo usermod -aG docker $(whoami) && \
 sudo docker version
 if_failed "Docker installation/upgrade failed."
 
-echo-green "Installing Docker Compose..."
+echo-green "Installing Docker Compose v{DOCKER_COMPOSE_VERSION}..."
 sudo curl -L https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose && \
 sudo chmod +x /usr/local/bin/docker-compose && \
 docker-compose --version
