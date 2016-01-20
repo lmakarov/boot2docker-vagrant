@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.4.0 (2016-01-20)
+
+- Version updates
+  - Switched to blinkreaction/boot2docker base box v1.9.1
+  - docker 1.9.1
+  - docker-compose 1.5.2
+- Set NFS attribute caching of files and directories to 2 seconds
+  - This will make sure delays in file system updates detection is within 2s.
+- Prevent permission (chmod) errors on SMB share
+- Updates in install scripts
+  - Brew Cask is now part of Brew
+  - Point DOCKER_HOST to 192.168.10.10 instead of localhost for better performance with Intel adapters and NAT
+  - Suppress errors from VBoxManage on Windows
+  - Improved messaging in setup scripts
+
 ## 1.3.1 (2015-11-16)
 
 - Remove /cygdrive prefix

@@ -99,7 +99,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "boot2docker"
 
   config.vm.box = "blinkreaction/boot2docker"
-  config.vm.box_version = "1.9.0"
+  config.vm.box_version = "1.9.1"
   config.vm.box_check_update = true
 
   ## Network ##
@@ -132,7 +132,7 @@ Vagrant.configure("2") do |config|
     @ui.success "Using nfs2 synced folder option"
     config.vm.synced_folder vagrant_root, vagrant_mount_point,
       type: "nfs",
-      mount_options: ["nolock", "noacl", "nocto", "noatime", "nodiratime", "vers=3", "tcp"]
+      mount_options: ["nolock", "noacl", "nocto", "noatime", "nodiratime", "vers=3", "tcp", "actimeo=2"]
     config.nfs.map_uid = Process.uid
     config.nfs.map_gid = Process.gid
   # smb: Better performance on Windows. Requires Vagrant to be run with admin privileges.
@@ -164,7 +164,7 @@ Vagrant.configure("2") do |config|
     config.vm.provision "shell", run: "always" do |s|
       s.inline = <<-SCRIPT
         mkdir -p vagrant $2
-        mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,sec=ntlm,username=$3,pass=$4,dir_mode=0777,file_mode=0777 //$5/$1 $2
+        mount -t cifs -o uid=`id -u docker`,gid=`id -g docker`,noperm,sec=ntlm,username=$3,pass=$4,dir_mode=0777,file_mode=0777 //$5/$1 $2
       SCRIPT
       s.args = "#{vagrant_folder_name} #{vagrant_mount_point} #{$vconfig['synced_folders']['smb_username']} #{$vconfig['synced_folders']['smb_password']} #{host_ip}"
     end
