@@ -1,7 +1,5 @@
 #!/bin/bash
 
-DOCKER_VERSION=1.9.1
-DOCKER_COMPOSE_VERSION=1.5.2
 
 # Console colors
 red='\033[0;31m'
@@ -26,18 +24,3 @@ curl -sSL https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${
 curl -sSL https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${B2D_BRANCH}/scripts/presetup-win.vbs -o $WINDIR/Temp/presetup-win.vbs
 echo-yellow "Setup needs administrator privileges to contiue..."
 cscript $WINDIR/Temp/presetup-win.vbs
-
-# Install Docker
-echo-green "Installing docker cli v${DOCKER_VERSION}..."
-curl -sSL https://get.docker.com/builds/Windows/i386/docker-$DOCKER_VERSION.exe -o /usr/local/bin/docker
-chmod +x /usr/local/bin/docker
-
-# Install Docker Compose
-echo-green "Installing docker-compose v${DOCKER_COMPOSE_VERSION}..."
-curl -sSL https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-Windows-x86_64.exe > /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
-
-# Git settings
-echo-green "Adjusting git defaults..."
-git config --global core.autocrlf input
-git config --system core.longpaths true

@@ -33,6 +33,13 @@ Prerequisites are installed using **babun** and **chocolatey** (chocolatey will 
 
     bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/scripts/presetup-win.sh)
 
+**Windows (alternative)**
+
+If you don't want babun, run this script in administrator mode (right clic execute into administrator), the file must be in your computer for security purpose.
+
+    /scripts/presetup-win.cmd
+
+Then you must continue using manual installation
 
 <a name="setup"></a>
 ## Setup and usage
@@ -53,7 +60,7 @@ Designate a root folder that the VM will have access to (e.g. `~/Projects`) and 
     ```
 
 3. Verify your setup by checking docker client and server versions
-    
+
     ```    
     docker version
     ```
