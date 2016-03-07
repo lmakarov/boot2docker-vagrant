@@ -2,6 +2,7 @@
 
 DOCKER_VERSION=1.9.1
 DOCKER_COMPOSE_VERSION=1.5.2
+WINPTY_VERSION=0.2.2
 
 # Console colors
 red='\033[0;31m'
@@ -36,6 +37,13 @@ chmod +x /usr/local/bin/docker
 echo-green "Installing docker-compose v${DOCKER_COMPOSE_VERSION}..."
 curl -sSL https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-Windows-x86_64.exe > /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
+
+# Install winpty
+echo-green "Installing winpty (console) v$WINPTY_VERSION..."
+curl -sSL -O https://github.com/rprichard/winpty/releases/download/$WINPTY_VERSION/winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32.tar.gz
+tar -xf winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32.tar.gz
+mv winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32/bin/* /usr/bin
+rm -rf winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32*
 
 # Git settings
 echo-green "Adjusting git defaults..."
