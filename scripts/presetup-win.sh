@@ -45,6 +45,9 @@ tar -xf winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32.tar.gz
 mv winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32/bin/* /usr/bin
 rm -rf winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32*
 
+# Install winpty
+curl -s https://raw.githubusercontent.com/tiangolo/babun-docker/master/setup.sh | source /dev/stdin
+
 # Git settings
 echo-green "Adjusting git defaults..."
 git config --global core.autocrlf input
