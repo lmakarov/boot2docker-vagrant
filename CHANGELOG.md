@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.5.0 (2016-04-14)
+
+- Switched to blinkreaction/boot2docker base box [v1.10.3](https://atlas.hashicorp.com/blinkreaction/boxes/boot2docker/versions/1.10.3)
+  - boot2docker/docker 1.10.3, docker-compose 1.6.2
+- Using `upgrade` command with choco on Windows
+- Added winpty on Windows
+  - This allows running interactive docker commands in Babun directly (without using `vagrant ssh -c`)
+- Using VirtualBox DNS proxy with the DNS Discovery service
+
+
 ## 1.4.0 (2016-01-20)
 
 - Version updates

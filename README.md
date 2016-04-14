@@ -1,4 +1,5 @@
 # Boot2docker Vagrant Box
+
 Boot2docker Vagrant box for optimized Docker and Docker Compose use on Mac and Windows.
 
 

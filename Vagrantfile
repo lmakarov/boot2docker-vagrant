@@ -99,7 +99,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "boot2docker"
 
   config.vm.box = "blinkreaction/boot2docker"
-  config.vm.box_version = "1.9.1"
+  config.vm.box_version = "1.10.3"
   config.vm.box_check_update = true
 
   ## Network ##
@@ -262,10 +262,12 @@ Vagrant.configure("2") do |config|
     v.cpus = $vconfig['v.cpus']  # CPU settings. VirtualBox works much better with a single CPU.
     v.memory = $vconfig['v.memory']  # Memory settings.
     
-    # Disable VirtualBox DNS proxy as it may cause issues.
-    # See https://github.com/docker/machine/pull/1069
+    # Use VirtualBox DNS proxy mode (but not the resolver mode).
+    # See https://www.virtualbox.org/manual/ch09.html#nat-adv-dns
+    # and https://www.virtualbox.org/manual/ch09.html#nat_host_resolver_proxy
+    # Also see https://github.com/docker/machine/pull/1069 for a different perspective on this.
+    v.customize ['modifyvm', :id, '--natdnsproxy1', 'on']
     v.customize ['modifyvm', :id, '--natdnshostresolver1', 'off']
-    v.customize ['modifyvm', :id, '--natdnsproxy1', 'off']
   end
 
   ## Provisioning scripts ##
@@ -308,7 +310,7 @@ Vagrant.configure("2") do |config|
       echo "Starting system-wide DNS service... "
       docker rm -f dns > /dev/null 2>&1 || true
       docker run -d --name dns --label "group=system" \
-      -p $1:53:53/udp -p 172.17.42.1:53:53/udp --cap-add=NET_ADMIN --dns 8.8.8.8 \
+      -p $1:53:53/udp -p 172.17.42.1:53:53/udp --cap-add=NET_ADMIN --dns 10.0.2.3 \
       -v /var/run/docker.sock:/var/run/docker.sock \
       blinkreaction/dns-discovery@sha256:f1322ab6d5496c8587e59e47b0a8b1479a444098b40ddd598e85e9ab4ce146d8 > /dev/null
     SCRIPT
