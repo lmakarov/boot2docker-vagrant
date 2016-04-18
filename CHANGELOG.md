@@ -1,5 +1,20 @@
 # Changelog
 
+
+## 1.5.1 (2016-04-18)
+
+- Windows fixes
+  - Use a more complex smb_password
+    - This addresses issues in strict password enforcement environments.
+    - IMPORTANT (Only if you are using the `default` or `smb2` sharing type on Windows - check in `vagrant.yml`):
+      - In an **admin cmd.exe** prompt run `net user vagrant P@ssW0rd1!` to update the existing vagrant user password.
+      - Alternatively start fresh: `vagrant destroy -f`, then `vagrant up`
+  - Improved winpty compatibility
+- Silence docker run shell provisioning
+  - No more red text output from `docker run` during the first VM boot
+- Update VERSION file
+
+
 ## 1.5.0 (2016-04-14)
 
 - Switched to blinkreaction/boot2docker base box [v1.10.3](https://atlas.hashicorp.com/blinkreaction/boxes/boot2docker/versions/1.10.3)
