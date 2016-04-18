@@ -16,7 +16,7 @@ synced_folders:
   # This is usually your Windows username and password, unless you created a dedicated user for vagrant.
   # If using the 'smb2' type above the user and share will be configured automatically.
   smb_username: 'vagrant'
-  smb_password: 'vagrant'
+  smb_password: 'P@ssW0rd1!'
   # Create smb share on vagrant up (if type smb2). Set to false if you want to or already created the user and the smb share manually.
   # If false, the share name should be equal to the directory name in which Vagrantfile is located.
   smb2_auto: true
