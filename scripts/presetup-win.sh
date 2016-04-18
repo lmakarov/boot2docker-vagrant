@@ -30,19 +30,19 @@ cscript $WINDIR/Temp/presetup-win.vbs
 
 # Install Docker
 echo-green "Installing docker cli v${DOCKER_VERSION}..."
-curl -sSL https://get.docker.com/builds/Windows/i386/docker-$DOCKER_VERSION.exe -o /usr/local/bin/docker
-chmod +x /usr/local/bin/docker
+curl -sSL https://get.docker.com/builds/Windows/i386/docker-$DOCKER_VERSION.exe -o /usr/local/bin/docker.exe
+chmod +x /usr/local/bin/docker.exe
 
 # Install Docker Compose
 echo-green "Installing docker-compose v${DOCKER_COMPOSE_VERSION}..."
-curl -sSL https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-Windows-x86_64.exe > /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
+curl -sSL https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-Windows-x86_64.exe -o /usr/local/bin/docker-compose.exe
+chmod +x /usr/local/bin/docker-compose.exe
 
 # Install winpty
 echo-green "Installing winpty (console) v$WINPTY_VERSION..."
 curl -sSL -O https://github.com/rprichard/winpty/releases/download/$WINPTY_VERSION/winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32.tar.gz
 tar -xf winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32.tar.gz
-mv winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32/bin/* /usr/bin
+mv winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32/bin/* /usr/local/bin
 rm -rf winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32*
 
 # Git settings
