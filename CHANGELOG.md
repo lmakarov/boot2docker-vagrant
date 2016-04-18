@@ -10,9 +10,10 @@
       - In an **admin cmd.exe** prompt run `net user vagrant P@ssW0rd1!` to update the existing vagrant user password.
       - Alternatively start fresh: `vagrant destroy -f`, then `vagrant up`
   - Improved winpty compatibility
+    - IMPORTANT: Prior to updating run `rm -f /usr/local/bin/docker*` in Babun, then run the install script.
 - Silence docker run shell provisioning
   - No more red text output from `docker run` during the first VM boot
-- Update VERSION file
+- Updated VERSION file
 
 
 ## 1.5.0 (2016-04-14)
