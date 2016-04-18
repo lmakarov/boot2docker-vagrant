@@ -312,7 +312,7 @@ Vagrant.configure("2") do |config|
       docker run -d --name dns --label "group=system" \
       -p $1:53:53/udp -p 172.17.42.1:53:53/udp --cap-add=NET_ADMIN --dns 10.0.2.3 \
       -v /var/run/docker.sock:/var/run/docker.sock \
-      blinkreaction/dns-discovery@sha256:f1322ab6d5496c8587e59e47b0a8b1479a444098b40ddd598e85e9ab4ce146d8 > /dev/null
+      blinkreaction/dns-discovery@sha256:f1322ab6d5496c8587e59e47b0a8b1479a444098b40ddd598e85e9ab4ce146d8 > /dev/null 2>&1
     SCRIPT
     s.args = "#{box_ip}"
   end
@@ -327,7 +327,7 @@ Vagrant.configure("2") do |config|
         docker rm -f vhost-proxy > /dev/null 2>&1 || true
         docker run -d --name vhost-proxy --label "group=system" -p $1:80:80 -p $1:443:443 \
         -v /var/run/docker.sock:/tmp/docker.sock \
-        blinkreaction/nginx-proxy@sha256:1707c0fd2fa4f0e98a656f748a4edb8a04578e9dc63115acc23a05225f151e04 > /dev/null
+        blinkreaction/nginx-proxy@sha256:1707c0fd2fa4f0e98a656f748a4edb8a04578e9dc63115acc23a05225f151e04 > /dev/null 2>&1
       SCRIPT
       s.args = "#{box_ip}"
     end
