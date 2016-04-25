@@ -50,7 +50,7 @@ synced_folders:
 
 # VirtualBox VM settings
 v.gui: false  # Set to true for debugging. Will unhide VM's primary console screen.
-v.memory: 2048  # Memory settings.
+v.memory: 1024  # Memory settings.
 v.cpus: 1  # CPU settings. VirtualBox works much better with a single CPU.
 
 # Network settings
