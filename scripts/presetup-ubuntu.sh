@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DOCKER_VERSION=1.9.1
-DOCKER_COMPOSE_VERSION=1.5.2
+DOCKER_VERSION=1.11.1
+DOCKER_COMPOSE_VERSION=1.7.1
 
 #-------------------------- Helper functions --------------------------------
 
