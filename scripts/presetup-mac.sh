@@ -13,24 +13,25 @@ echo-red () { echo -e "${red}$1${NC}"; }
 echo-green () { echo -e "${green}$1${NC}"; }
 echo-yellow () { echo -e "${yellow}$1${NC}"; }
 
-# Homebrew installation
-echo-green "Installing Homebrew..."
-ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+# # Homebrew installation
+# echo-green "Installing Homebrew..."
+# ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-# Update brew formulae
-echo-green "Updating brew formulae..."
-brew update
+# # Update brew formulae
+# echo-green "Updating brew formulae..."
+# brew update
 
-# VirtualBox installation
-echo-green "Installing virtualbox..."
-brew cask install virtualbox
+# # VirtualBox installation
+# echo-green "Installing virtualbox..."
+# brew cask install virtualbox
 # Kill the default adapter and DHCP server to avoid network issues down the road
+echo-green "Configuring virtualbox..."
 VBoxManage dhcpserver remove --netname HostInterfaceNetworking-vboxnet0 > /dev/null 2>&1
 VBoxManage hostonlyif remove vboxnet0 > /dev/null 2>&1
 
-# Vagrant installation
-echo-green "Installing vagrant..."
-brew cask install vagrant
+# # Vagrant installation
+# echo-green "Installing vagrant..."
+# brew cask install vagrant
 
 # Install docker
 echo-green "Installing docker cli v${DOCKER_VERSION}..."

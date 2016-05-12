@@ -22,11 +22,11 @@ else
 fi
 
 # Install prerequisites via choco (virtualbox and vagrant)
-echo-green "Installing virtualbox and vagrant via choco..."
-curl -sSL https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${B2D_BRANCH}/scripts/presetup-win.cmd -o $WINDIR/Temp/presetup-win.cmd
-curl -sSL https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${B2D_BRANCH}/scripts/presetup-win.vbs -o $WINDIR/Temp/presetup-win.vbs
-echo-yellow "Setup needs administrator privileges to contiue..."
-cscript $WINDIR/Temp/presetup-win.vbs
+# echo-green "Installing virtualbox and vagrant via choco..."
+# curl -sSL https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${B2D_BRANCH}/scripts/presetup-win.cmd -o $WINDIR/Temp/presetup-win.cmd
+# curl -sSL https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${B2D_BRANCH}/scripts/presetup-win.vbs -o $WINDIR/Temp/presetup-win.vbs
+# echo-yellow "Setup needs administrator privileges to contiue..."
+# cscript $WINDIR/Temp/presetup-win.vbs
 
 # Install Docker
 echo-green "Installing docker cli v${DOCKER_VERSION}..."
