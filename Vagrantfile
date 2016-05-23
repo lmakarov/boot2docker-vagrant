@@ -317,6 +317,19 @@ Vagrant.configure("2") do |config|
     s.args = "#{box_ip}"
   end
 
+  # System-wide ssh-agent service.
+  # Image: blinkreaction/dns-discovery v1.0.0
+  config.vm.provision "shell", run: "always", privileged: false do |s|
+    s.inline = <<-SCRIPT
+      echo "Creating Drude SSH-agent service..."
+      docker rm -f ssh-agent > /dev/null 2>&1 || true
+      docker run -d --name ssh-agent --label "group=system" \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      blinkreaction/docker-ssh-agent@sha256:57939f8cbd08bf9fb0451fb7444bc6837f4ef4ce6b5a82e530b20407b10ce29f > /dev/null 2>&1
+    SCRIPT
+    s.args = "#{box_ip}"
+  end
+
   # System-wide vhost-proxy service.
   # Containers must define a "VIRTUAL_HOST" environment variable to be recognized and routed by the vhost-proxy.
   # Image: blinkreaction/nginx-proxy v1.1.0
