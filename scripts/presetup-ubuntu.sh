@@ -68,6 +68,12 @@ sudo docker run -d --name vhost-proxy -p 192.168.10.10:80:80 -p 192.168.10.10:44
 -v /var/run/docker.sock:/tmp/docker.sock blinkreaction/nginx-proxy:stable
 if_failed "DockerBox HTTP/HTTPS reverse proxy setup failed."
 
+echo-green "Creating Drude SSH-agent service..."
+sudo docker rm -f ssh-agent || true
+sudo docker run -d --name ssh-agent --restart=always \
+-v /var/run/docker.sock:/var/run/docker.sock blinkreaction/ssh-agent:stable
+if_failed "Drude SSH-agent service setup failed."
+
 echo-green "Creating DockerBox DNS service..."
 sudo docker rm -f dns || true
 sudo docker run -d --name dns -p 192.168.10.10:53:53/udp --cap-add=NET_ADMIN --dns 8.8.8.8 --restart=always \
