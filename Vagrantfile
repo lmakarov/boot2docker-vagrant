@@ -304,7 +304,6 @@ Vagrant.configure("2") do |config|
   end
 
   # System-wide dnsmasq service for DNS discovery and name resolution
-  # Image: blinkreaction/dns-discovery v1.0.0
   config.vm.provision "shell", run: "always", privileged: false do |s|
     s.inline = <<-SCRIPT
       echo "Starting system-wide DNS service... "
@@ -312,27 +311,25 @@ Vagrant.configure("2") do |config|
       docker run -d --name dns --label "group=system" \
       -p $1:53:53/udp -p 172.17.42.1:53:53/udp --cap-add=NET_ADMIN --dns 10.0.2.3 \
       -v /var/run/docker.sock:/var/run/docker.sock \
-      blinkreaction/dns-discovery@sha256:f1322ab6d5496c8587e59e47b0a8b1479a444098b40ddd598e85e9ab4ce146d8 > /dev/null 2>&1
+      blinkreaction/dns-discovery:stable > /dev/null 2>&1
     SCRIPT
     s.args = "#{box_ip}"
   end
 
   # System-wide ssh-agent service.
-  # Image: blinkreaction/ssh-agent v1.0.0
   config.vm.provision "shell", run: "always", privileged: false do |s|
     s.inline = <<-SCRIPT
-      echo "Creating Drude SSH-agent service..."
+      echo "Creating Drude ssh-agent service..."
       docker rm -f ssh-agent > /dev/null 2>&1 || true
       docker run -d --name ssh-agent --label "group=system" \
       -v /var/run/docker.sock:/var/run/docker.sock \
-      blinkreaction/ssh-agent > /dev/null 2>&1
+      blinkreaction/ssh-agent:stable > /dev/null 2>&1
     SCRIPT
     s.args = "#{box_ip}"
   end
 
   # System-wide vhost-proxy service.
   # Containers must define a "VIRTUAL_HOST" environment variable to be recognized and routed by the vhost-proxy.
-  # Image: blinkreaction/nginx-proxy v1.1.0
   if $vconfig['vhost_proxy']
     config.vm.provision "shell", run: "always", privileged: false do |s|
       s.inline = <<-SCRIPT
@@ -340,7 +337,7 @@ Vagrant.configure("2") do |config|
         docker rm -f vhost-proxy > /dev/null 2>&1 || true
         docker run -d --name vhost-proxy --label "group=system" -p $1:80:80 -p $1:443:443 \
         -v /var/run/docker.sock:/tmp/docker.sock \
-        blinkreaction/nginx-proxy@sha256:1707c0fd2fa4f0e98a656f748a4edb8a04578e9dc63115acc23a05225f151e04 > /dev/null 2>&1
+        blinkreaction/nginx-proxy:stable > /dev/null 2>&1
       SCRIPT
       s.args = "#{box_ip}"
     end
