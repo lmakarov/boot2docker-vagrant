@@ -71,7 +71,7 @@ if_failed "DockerBox HTTP/HTTPS reverse proxy setup failed."
 echo-green "Creating Drude SSH-agent service..."
 sudo docker rm -f ssh-agent || true
 sudo docker run -d --name ssh-agent --restart=always \
--v /var/run/docker.sock:/var/run/docker.sock blinkreaction/docker-ssh-agent:latest
+-v /var/run/docker.sock:/var/run/docker.sock blinkreaction/ssh-agent:stable
 if_failed "Drude SSH-agent service setup failed."
 
 echo-green "Creating DockerBox DNS service..."
