@@ -304,42 +304,37 @@ Vagrant.configure("2") do |config|
   end
 
   # System-wide dnsmasq service for DNS discovery and name resolution
-  config.vm.provision "shell", run: "always", privileged: false do |s|
+  config.vm.provision "shell", privileged: false do |s|
     s.inline = <<-SCRIPT
-      echo "Starting system-wide DNS service... "
-      docker rm -f dns > /dev/null 2>&1 || true
-      docker run -d --name dns --label "group=system" \
-      -p $1:53:53/udp -p 172.17.42.1:53:53/udp --cap-add=NET_ADMIN --dns 10.0.2.3 \
+      echo "Setting up system-wide DNS service... "
+      docker run -d --name dns --label "group=system" --restart=always \
+      -p 53:53/udp --cap-add=NET_ADMIN --dns 10.0.2.3 \
       -v /var/run/docker.sock:/var/run/docker.sock \
       blinkreaction/dns-discovery:stable > /dev/null 2>&1
     SCRIPT
-    s.args = "#{box_ip}"
   end
 
   # System-wide ssh-agent service.
-  config.vm.provision "shell", run: "always", privileged: false do |s|
+  config.vm.provision "shell", privileged: false do |s|
     s.inline = <<-SCRIPT
-      echo "Creating system-wide ssh-agent service..."
-      docker rm -f ssh-agent > /dev/null 2>&1 || true
-      docker run -d --name ssh-agent --label "group=system" \
+      echo "Setting up system-wide ssh-agent service..."
+      docker run -d --name ssh-agent --label "group=system" --restart=always \
       -v /var/run/docker.sock:/var/run/docker.sock \
       blinkreaction/ssh-agent:stable > /dev/null 2>&1
     SCRIPT
-    s.args = "#{box_ip}"
   end
 
   # System-wide vhost-proxy service.
   # Containers must define a "VIRTUAL_HOST" environment variable to be recognized and routed by the vhost-proxy.
   if $vconfig['vhost_proxy']
-    config.vm.provision "shell", run: "always", privileged: false do |s|
+    config.vm.provision "shell", privileged: false do |s|
       s.inline = <<-SCRIPT
-        echo "Starting system-wide HTTP/HTTPS reverse proxy on $1... "
-        docker rm -f vhost-proxy > /dev/null 2>&1 || true
-        docker run -d --name vhost-proxy --label "group=system" -p $1:80:80 -p $1:443:443 \
+        echo "Setting up system-wide HTTP/HTTPS reverse proxy... "
+        docker run -d --name vhost-proxy --label "group=system" --restart=always \
+        -p 80:80 -p 443:443 \
         -v /var/run/docker.sock:/tmp/docker.sock \
         blinkreaction/nginx-proxy:stable > /dev/null 2>&1
       SCRIPT
-      s.args = "#{box_ip}"
     end
   end
   
