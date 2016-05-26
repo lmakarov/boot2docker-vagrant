@@ -319,7 +319,7 @@ Vagrant.configure("2") do |config|
   # System-wide ssh-agent service.
   config.vm.provision "shell", run: "always", privileged: false do |s|
     s.inline = <<-SCRIPT
-      echo "Creating Drude ssh-agent service..."
+      echo "Creating system-wide ssh-agent service..."
       docker rm -f ssh-agent > /dev/null 2>&1 || true
       docker run -d --name ssh-agent --label "group=system" \
       -v /var/run/docker.sock:/var/run/docker.sock \
