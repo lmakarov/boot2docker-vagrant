@@ -15,7 +15,6 @@ echo-yellow () { echo -e "${yellow}$1${NC}"; }
 
 # Homebrew installation
 echo-green "Installing Homebrew..."
-sudo chown -R $USER /usr/local/
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 # Update brew formulae
