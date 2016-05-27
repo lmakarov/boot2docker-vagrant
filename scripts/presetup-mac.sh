@@ -15,6 +15,7 @@ echo-yellow () { echo -e "${yellow}$1${NC}"; }
 
 # Homebrew installation
 echo-green "Installing Homebrew..."
+sudo chown -R $USER /usr/local/
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 # Update brew formulae
@@ -34,10 +35,12 @@ brew cask install vagrant
 
 # Install docker
 echo-green "Installing docker cli v${DOCKER_VERSION}..."
+[ -f "/usr/local/bin/docker" ] && sudo rm /usr/local/bin/docker
 sudo curl -sSL "https://get.docker.com/builds/$(uname -s)/$(uname -m)/docker-$DOCKER_VERSION" -o /usr/local/bin/docker
 sudo chmod +x /usr/local/bin/docker
 
 # Install docker-compose
 echo-green "Installing docker-compose v${DOCKER_COMPOSE_VERSION}..."
+[ -f "/usr/local/bin/docker-compose" ] && sudo rm /usr/local/bin/docker-compose
 sudo curl -sSL "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
