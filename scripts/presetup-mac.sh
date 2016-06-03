@@ -44,7 +44,7 @@ if [[ "$B2D_INSTALL_MODE" == "full" ]] || [[ "$B2D_INSTALL_MODE" == "docker" ]] 
 	sudo rm -f /usr/local/bin/docker >/dev/null 2>&1 || true
 	# Install docker
 	echo-green "Installing docker cli v${DOCKER_VERSION}..."
-	curl -sSL "https://get.docker.com/builds/$(uname -s)/$(uname -m)/docker-$DOCKER_VERSION.tgz"
+	curl -sSL -O "https://get.docker.com/builds/$(uname -s)/$(uname -m)/docker-$DOCKER_VERSION.tgz"
 	tar zxf docker-$DOCKER_VERSION.tgz
 	sudo mv docker/* /usr/local/bin
 	rm -rf docker-$DOCKER_VERSION*

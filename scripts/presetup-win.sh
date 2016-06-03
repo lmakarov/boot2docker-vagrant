@@ -33,7 +33,7 @@ if [[ "$B2D_INSTALL_MODE" == "full" ]] || [[ "$B2D_INSTALL_MODE" == "docker" ]] 
 	rm -f /usr/local/bin/docker >/dev/null 2>&1 || true
 	# Install Docker
 	echo-green "Installing docker cli v${DOCKER_VERSION}..."
-	curl -sSL https://get.docker.com/builds/Windows/i386/docker-$DOCKER_VERSION.zip
+	curl -sSL -O https://get.docker.com/builds/Windows/i386/docker-$DOCKER_VERSION.zip
 	unzip docker-$DOCKER_VERSION.zip
 	mv docker/* /usr/local/bin
 	rm -rf docker-$DOCKER_VERSION*
