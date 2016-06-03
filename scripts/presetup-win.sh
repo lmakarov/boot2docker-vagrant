@@ -1,8 +1,8 @@
 #!/bin/bash
 
-DOCKER_VERSION=1.10.3
-DOCKER_COMPOSE_VERSION=1.6.2
-WINPTY_VERSION=0.2.2
+DOCKER_VERSION=1.11.2
+DOCKER_COMPOSE_VERSION=1.7.1
+WINPTY_VERSION=0.3.1
 
 # Console colors
 red='\033[0;31m'
@@ -28,11 +28,15 @@ curl -sSL https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${
 echo-yellow "Setup needs administrator privileges to contiue..."
 cscript $WINDIR/Temp/presetup-win.vbs
 
+# Remove old docker version
+rm -f /usr/local/bin/docker >/dev/null 2>&1 || true
 # Install Docker
 echo-green "Installing docker cli v${DOCKER_VERSION}..."
 curl -sSL https://get.docker.com/builds/Windows/i386/docker-$DOCKER_VERSION.exe -o /usr/local/bin/docker.exe
 chmod +x /usr/local/bin/docker.exe
 
+# Remove old docker-compose version
+rm -f /usr/local/bin/docker-compose >/dev/null 2>&1 || true
 # Install Docker Compose
 echo-green "Installing docker-compose v${DOCKER_COMPOSE_VERSION}..."
 curl -sSL https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-Windows-x86_64.exe -o /usr/local/bin/docker-compose.exe

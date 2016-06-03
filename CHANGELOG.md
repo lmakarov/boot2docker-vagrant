@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.6.0 (2016-06-03)
+
+- Switched to blinkreaction/boot2docker base box [v1.11.2](https://atlas.hashicorp.com/blinkreaction/boxes/boot2docker/versions/1.11.2)
+  - boot2docker/docker 1.11.2, docker-compose 1.7.1
+- Set `v.memory: 1024` by default
+- System services
+  - New ssh-agent service
+  - Use the `stable` tag for vhost-proxy, dns, ssh-agent
+  - Bind all system services to `0.0.0.0`
+  - Run services with `--privileged --userns=host` (to give propper access to `docker.sock`)
+- Remove `scripts/presetup-ubuntu.sh`
+- Misc. imporvements in `presetup-mac.sh` and `presetup-win.sh`
+
 
 ## 1.5.1 (2016-04-18)
 

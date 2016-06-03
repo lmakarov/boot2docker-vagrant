@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DOCKER_VERSION=1.10.3
-DOCKER_COMPOSE_VERSION=1.6.2
+DOCKER_VERSION=1.11.2
+DOCKER_COMPOSE_VERSION=1.7.1
 
 # Console colors
 red='\033[0;31m'
@@ -32,11 +32,15 @@ VBoxManage hostonlyif remove vboxnet0 > /dev/null 2>&1
 echo-green "Installing vagrant..."
 brew cask install vagrant
 
+# Remove old docker version
+sudo rm -f /usr/local/bin/docker >/dev/null 2>&1 || true
 # Install docker
 echo-green "Installing docker cli v${DOCKER_VERSION}..."
 sudo curl -sSL "https://get.docker.com/builds/$(uname -s)/$(uname -m)/docker-$DOCKER_VERSION" -o /usr/local/bin/docker
 sudo chmod +x /usr/local/bin/docker
 
+# Remove old docker-compose version
+sudo rm -f /usr/local/bin/docker-compose >/dev/null 2>&1 || true
 # Install docker-compose
 echo-green "Installing docker-compose v${DOCKER_COMPOSE_VERSION}..."
 sudo curl -sSL "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose

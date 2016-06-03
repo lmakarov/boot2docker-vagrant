@@ -99,7 +99,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "boot2docker"
 
   config.vm.box = "blinkreaction/boot2docker"
-  config.vm.box_version = "1.10.3"
+  config.vm.box_version = "1.11.2"
   config.vm.box_check_update = true
 
   ## Network ##
@@ -304,32 +304,37 @@ Vagrant.configure("2") do |config|
   end
 
   # System-wide dnsmasq service for DNS discovery and name resolution
-  # Image: blinkreaction/dns-discovery v1.0.0
-  config.vm.provision "shell", run: "always", privileged: false do |s|
+  config.vm.provision "shell", privileged: false do |s|
     s.inline = <<-SCRIPT
-      echo "Starting system-wide DNS service... "
-      docker rm -f dns > /dev/null 2>&1 || true
-      docker run -d --name dns --label "group=system" \
-      -p $1:53:53/udp -p 172.17.42.1:53:53/udp --cap-add=NET_ADMIN --dns 10.0.2.3 \
+      echo "Setting up system-wide DNS service... "
+      docker run -d --name dns --label "group=system" --restart=always --privileged --userns=host \
+      -p 53:53/udp --cap-add=NET_ADMIN --dns 10.0.2.3 \
       -v /var/run/docker.sock:/var/run/docker.sock \
-      blinkreaction/dns-discovery@sha256:f1322ab6d5496c8587e59e47b0a8b1479a444098b40ddd598e85e9ab4ce146d8 > /dev/null 2>&1
+      blinkreaction/dns-discovery:stable > /dev/null 2>&1
     SCRIPT
-    s.args = "#{box_ip}"
+  end
+
+  # System-wide ssh-agent service.
+  config.vm.provision "shell", privileged: false do |s|
+    s.inline = <<-SCRIPT
+      echo "Setting up system-wide ssh-agent service..."
+      docker run -d --name ssh-agent --label "group=system" --restart=always --privileged --userns=host \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      blinkreaction/ssh-agent:stable > /dev/null 2>&1
+    SCRIPT
   end
 
   # System-wide vhost-proxy service.
   # Containers must define a "VIRTUAL_HOST" environment variable to be recognized and routed by the vhost-proxy.
-  # Image: blinkreaction/nginx-proxy v1.1.0
   if $vconfig['vhost_proxy']
-    config.vm.provision "shell", run: "always", privileged: false do |s|
+    config.vm.provision "shell", privileged: false do |s|
       s.inline = <<-SCRIPT
-        echo "Starting system-wide HTTP/HTTPS reverse proxy on $1... "
-        docker rm -f vhost-proxy > /dev/null 2>&1 || true
-        docker run -d --name vhost-proxy --label "group=system" -p $1:80:80 -p $1:443:443 \
+        echo "Setting up system-wide HTTP/HTTPS reverse proxy... "
+        docker run -d --name vhost-proxy --label "group=system" --restart=always --privileged --userns=host \
+        -p 80:80 -p 443:443 \
         -v /var/run/docker.sock:/tmp/docker.sock \
-        blinkreaction/nginx-proxy@sha256:1707c0fd2fa4f0e98a656f748a4edb8a04578e9dc63115acc23a05225f151e04 > /dev/null 2>&1
+        blinkreaction/nginx-proxy:stable > /dev/null 2>&1
       SCRIPT
-      s.args = "#{box_ip}"
     end
   end
   
