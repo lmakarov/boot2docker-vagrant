@@ -32,14 +32,16 @@ VBoxManage hostonlyif remove vboxnet0 > /dev/null 2>&1
 echo-green "Installing vagrant..."
 brew cask install vagrant
 
+# Remove old docker version
+sudo rm -f /usr/local/bin/docker >/dev/null 2>&1 || true
 # Install docker
 echo-green "Installing docker cli v${DOCKER_VERSION}..."
-[ -f "/usr/local/bin/docker" ] && sudo rm /usr/local/bin/docker
 sudo curl -sSL "https://get.docker.com/builds/$(uname -s)/$(uname -m)/docker-$DOCKER_VERSION" -o /usr/local/bin/docker
 sudo chmod +x /usr/local/bin/docker
 
+# Remove old docker-compose version
+sudo rm -f /usr/local/bin/docker-compose >/dev/null 2>&1 || true
 # Install docker-compose
 echo-green "Installing docker-compose v${DOCKER_COMPOSE_VERSION}..."
-[ -f "/usr/local/bin/docker-compose" ] && sudo rm /usr/local/bin/docker-compose
 sudo curl -sSL "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
