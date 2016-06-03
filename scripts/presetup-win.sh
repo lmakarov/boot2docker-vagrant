@@ -32,8 +32,10 @@ cscript $WINDIR/Temp/presetup-win.vbs
 rm -f /usr/local/bin/docker >/dev/null 2>&1 || true
 # Install Docker
 echo-green "Installing docker cli v${DOCKER_VERSION}..."
-curl -sSL https://get.docker.com/builds/Windows/i386/docker-$DOCKER_VERSION.exe -o /usr/local/bin/docker.exe
-chmod +x /usr/local/bin/docker.exe
+curl -sSL https://get.docker.com/builds/Windows/i386/docker-$DOCKER_VERSION.zip
+unzip docker-$DOCKER_VERSION.zip
+mv docker/* /usr/local/bin
+rm -rf docker-$DOCKER_VERSION*
 
 # Remove old docker-compose version
 rm -f /usr/local/bin/docker-compose >/dev/null 2>&1 || true

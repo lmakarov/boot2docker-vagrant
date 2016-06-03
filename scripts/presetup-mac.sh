@@ -36,8 +36,10 @@ brew cask install vagrant
 sudo rm -f /usr/local/bin/docker >/dev/null 2>&1 || true
 # Install docker
 echo-green "Installing docker cli v${DOCKER_VERSION}..."
-sudo curl -sSL "https://get.docker.com/builds/$(uname -s)/$(uname -m)/docker-$DOCKER_VERSION" -o /usr/local/bin/docker
-sudo chmod +x /usr/local/bin/docker
+curl -sSL "https://get.docker.com/builds/$(uname -s)/$(uname -m)/docker-$DOCKER_VERSION.tgz"
+tar zxf docker-$DOCKER_VERSION.tgz
+sudo mv docker/* /usr/local/bin
+rm -rf docker-$DOCKER_VERSION*
 
 # Remove old docker-compose version
 sudo rm -f /usr/local/bin/docker-compose >/dev/null 2>&1 || true
