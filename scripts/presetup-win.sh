@@ -14,44 +14,46 @@ echo-red () { echo -e "${red}$1${NC}"; }
 echo-green () { echo -e "${green}$1${NC}"; }
 echo-yellow () { echo -e "${yellow}$1${NC}"; }
 
-# For testing
-if [ ! $B2D_BRANCH == "" ]; then
-	echo-red "[b2d-setup] testing mode: environment = ${B2D_BRANCH}"
-else
-	B2D_BRANCH='master'
+B2D_BRANCH="${B2D_BRANCH:-master}"
+B2D_INSTALL_MODE="${B2D_INSTALL_MODE:-full}"
+
+# VirtualBox and Vagrant dependencies
+if [[ "$B2D_INSTALL_MODE" == "full" ]] || [[ "$B2D_INSTALL_MODE" == "vm" ]] ; then
+	# Install prerequisites via choco (virtualbox and vagrant)
+	echo-green "Installing virtualbox and vagrant via choco..."
+	curl -sSL https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${B2D_BRANCH}/scripts/presetup-win.cmd -o $WINDIR/Temp/presetup-win.cmd
+	curl -sSL https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${B2D_BRANCH}/scripts/presetup-win.vbs -o $WINDIR/Temp/presetup-win.vbs
+	echo-yellow "Setup needs administrator privileges to contiue..."
+	cscript $WINDIR/Temp/presetup-win.vbs
 fi
 
-# Install prerequisites via choco (virtualbox and vagrant)
-echo-green "Installing virtualbox and vagrant via choco..."
-curl -sSL https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${B2D_BRANCH}/scripts/presetup-win.cmd -o $WINDIR/Temp/presetup-win.cmd
-curl -sSL https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/${B2D_BRANCH}/scripts/presetup-win.vbs -o $WINDIR/Temp/presetup-win.vbs
-echo-yellow "Setup needs administrator privileges to contiue..."
-cscript $WINDIR/Temp/presetup-win.vbs
+# Docker and other dependencies
+if [[ "$B2D_INSTALL_MODE" == "full" ]] || [[ "$B2D_INSTALL_MODE" == "docker" ]] ; then
+	# Remove old docker version
+	rm -f /usr/local/bin/docker >/dev/null 2>&1 || true
+	# Install Docker
+	echo-green "Installing docker cli v${DOCKER_VERSION}..."
+	curl -sSL https://get.docker.com/builds/Windows/i386/docker-$DOCKER_VERSION.zip
+	unzip docker-$DOCKER_VERSION.zip
+	mv docker/* /usr/local/bin
+	rm -rf docker-$DOCKER_VERSION*
 
-# Remove old docker version
-rm -f /usr/local/bin/docker >/dev/null 2>&1 || true
-# Install Docker
-echo-green "Installing docker cli v${DOCKER_VERSION}..."
-curl -sSL https://get.docker.com/builds/Windows/i386/docker-$DOCKER_VERSION.zip
-unzip docker-$DOCKER_VERSION.zip
-mv docker/* /usr/local/bin
-rm -rf docker-$DOCKER_VERSION*
+	# Remove old docker-compose version
+	rm -f /usr/local/bin/docker-compose >/dev/null 2>&1 || true
+	# Install Docker Compose
+	echo-green "Installing docker-compose v${DOCKER_COMPOSE_VERSION}..."
+	curl -sSL https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-Windows-x86_64.exe -o /usr/local/bin/docker-compose.exe
+	chmod +x /usr/local/bin/docker-compose.exe
 
-# Remove old docker-compose version
-rm -f /usr/local/bin/docker-compose >/dev/null 2>&1 || true
-# Install Docker Compose
-echo-green "Installing docker-compose v${DOCKER_COMPOSE_VERSION}..."
-curl -sSL https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-Windows-x86_64.exe -o /usr/local/bin/docker-compose.exe
-chmod +x /usr/local/bin/docker-compose.exe
+	# Install winpty
+	echo-green "Installing winpty (console) v$WINPTY_VERSION..."
+	curl -sSL -O https://github.com/rprichard/winpty/releases/download/$WINPTY_VERSION/winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32.tar.gz
+	tar -xf winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32.tar.gz
+	mv winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32/bin/* /usr/local/bin
+	rm -rf winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32*
 
-# Install winpty
-echo-green "Installing winpty (console) v$WINPTY_VERSION..."
-curl -sSL -O https://github.com/rprichard/winpty/releases/download/$WINPTY_VERSION/winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32.tar.gz
-tar -xf winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32.tar.gz
-mv winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32/bin/* /usr/local/bin
-rm -rf winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32*
-
-# Git settings
-echo-green "Adjusting git defaults..."
-git config --global core.autocrlf input
-git config --system core.longpaths true
+	# Git settings
+	echo-green "Adjusting git defaults..."
+	git config --global core.autocrlf input
+	git config --system core.longpaths true
+fi
