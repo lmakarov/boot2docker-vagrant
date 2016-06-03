@@ -20,6 +20,10 @@ For best result and a clean setup it is recommended to remove any previous versi
 Automatic **installation** and **updates** of prerequisites is available via the one-liners below.  
 **Make sure to stop all VirtualBox VMs prior to performing updates.**
 
+Note: If you already have brew/cask and necessary versions of VirtualBox and Vagrant installed, 
+prefer to install them manually or would like to not update these components automatically, 
+prefix the command with `B2D_INSTALL_MODE=docker `.
+
 **Mac**
 
 Prerequisites are installed using **brew/cask** (brew and cask will be installed if missing).

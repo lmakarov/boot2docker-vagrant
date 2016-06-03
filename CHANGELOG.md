@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.6.1 (2016-06-03)
+
+- Hotfix for downloading new docker binary versions
+- Added B2D_INSTALL_MODE switch
+- Updated docs
+
+
 ## 1.6.0 (2016-06-03)
 
 - Switched to blinkreaction/boot2docker base box [v1.11.2](https://atlas.hashicorp.com/blinkreaction/boxes/boot2docker/versions/1.11.2)
