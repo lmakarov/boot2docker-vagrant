@@ -307,7 +307,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", privileged: false do |s|
     s.inline = <<-SCRIPT
       echo "Setting up system-wide DNS service... "
-      docker run -d --name dns --label "group=system" --restart=always \
+      docker run -d --name dns --label "group=system" --restart=always --privileged --userns=host \
       -p 53:53/udp --cap-add=NET_ADMIN --dns 10.0.2.3 \
       -v /var/run/docker.sock:/var/run/docker.sock \
       blinkreaction/dns-discovery:stable > /dev/null 2>&1
@@ -318,7 +318,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", privileged: false do |s|
     s.inline = <<-SCRIPT
       echo "Setting up system-wide ssh-agent service..."
-      docker run -d --name ssh-agent --label "group=system" --restart=always \
+      docker run -d --name ssh-agent --label "group=system" --restart=always --privileged --userns=host \
       -v /var/run/docker.sock:/var/run/docker.sock \
       blinkreaction/ssh-agent:stable > /dev/null 2>&1
     SCRIPT
@@ -330,7 +330,7 @@ Vagrant.configure("2") do |config|
     config.vm.provision "shell", privileged: false do |s|
       s.inline = <<-SCRIPT
         echo "Setting up system-wide HTTP/HTTPS reverse proxy... "
-        docker run -d --name vhost-proxy --label "group=system" --restart=always \
+        docker run -d --name vhost-proxy --label "group=system" --restart=always --privileged --userns=host \
         -p 80:80 -p 443:443 \
         -v /var/run/docker.sock:/tmp/docker.sock \
         blinkreaction/nginx-proxy:stable > /dev/null 2>&1
