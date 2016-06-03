@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOCKER_VERSION=1.11.1
+DOCKER_VERSION=1.11.2
 DOCKER_COMPOSE_VERSION=1.7.1
 
 # Console colors
