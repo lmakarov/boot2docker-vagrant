@@ -3,6 +3,7 @@
 DOCKER_VERSION=1.11.2
 DOCKER_COMPOSE_VERSION=1.7.1
 WINPTY_VERSION=0.3.1
+CYGWIN_VERSION=2.5.1
 
 # Console colors
 red='\033[0;31m'
@@ -47,10 +48,10 @@ if [[ "$B2D_INSTALL_MODE" == "full" ]] || [[ "$B2D_INSTALL_MODE" == "docker" ]] 
 
 	# Install winpty
 	echo-green "Installing winpty (console) v$WINPTY_VERSION..."
-	curl -sSL -O https://github.com/rprichard/winpty/releases/download/$WINPTY_VERSION/winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32.tar.gz
-	tar -xf winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32.tar.gz
-	mv winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32/bin/* /usr/local/bin
-	rm -rf winpty-$WINPTY_VERSION-cygwin-2.4.1-ia32*
+	curl -sSL -O https://github.com/rprichard/winpty/releases/download/$WINPTY_VERSION/winpty-$WINPTY_VERSION-cygwin-$CYGWIN_VERSION-ia32.tar.gz
+	tar -xf winpty-$WINPTY_VERSION-cygwin-$CYGWIN_VERSION-ia32.tar.gz
+	mv winpty-$WINPTY_VERSION-cygwin-$CYGWIN_VERSION-ia32/bin/* /usr/local/bin
+	rm -rf winpty-$WINPTY_VERSION-cygwin-$CYGWIN_VERSION-ia32*
 
 	# Git settings
 	echo-green "Adjusting git defaults..."
