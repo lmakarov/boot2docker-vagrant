@@ -2,8 +2,10 @@
 
 DOCKER_VERSION=1.11.2
 DOCKER_COMPOSE_VERSION=1.7.1
+# These two shouldbe changes together. Always check https://github.com/rprichard/winpty/releases for the current version.
 WINPTY_VERSION=0.3.1
 CYGWIN_VERSION=2.5.1
+##
 
 # Console colors
 red='\033[0;31m'
