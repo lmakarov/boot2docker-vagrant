@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.2 (2016-06-27)
+
+- Hotfix: Fixed broken winpty dependency since 1.6.0 on Windows
+
+
 ## 1.6.1 (2016-06-03)
 
 - Hotfix for downloading new docker binary versions
