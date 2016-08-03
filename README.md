@@ -11,7 +11,7 @@ The stock boot2docker/docker-machine mounts host volumes via VirtualBox Guest Ad
 
 <a name="requirements"></a>
 ## Prerequisites
-1. [VirtualBox](https://www.virtualbox.org/) 5.0+
+1. [VirtualBox](https://www.virtualbox.org/) 5.0.x
 2. [Vagrant](https://www.vagrantup.com/) 1.7.3+
 3. [Babun](http://babun.github.io) - A Linux-type shell, **Windows only**
 
