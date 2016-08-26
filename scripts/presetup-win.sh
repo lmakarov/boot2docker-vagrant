@@ -1,10 +1,10 @@
 #!/bin/bash
 
-DOCKER_VERSION=1.11.2
-DOCKER_COMPOSE_VERSION=1.7.1
+DOCKER_VERSION=1.12.1
+DOCKER_COMPOSE_VERSION=1.8.0
 # These two shouldbe changes together. Always check https://github.com/rprichard/winpty/releases for the current version.
-WINPTY_VERSION=0.3.1
-CYGWIN_VERSION=2.5.1
+WINPTY_VERSION=0.4.0
+CYGWIN_VERSION=2.5.2
 ##
 
 # Console colors
