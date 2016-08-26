@@ -11,9 +11,9 @@ The stock boot2docker/docker-machine mounts host volumes via VirtualBox Guest Ad
 
 <a name="requirements"></a>
 ## Prerequisites
-1. [VirtualBox](https://www.virtualbox.org/) 5.0+
-2. [Vagrant](https://www.vagrantup.com/) 1.7.3+
-3. [Babun](http://babun.github.io) - A Linux-type shell, **Windows only**
+1. [VirtualBox](https://www.virtualbox.org/) 5.1.x
+2. [Vagrant](https://www.vagrantup.com/) 1.8.5+
+3. [Babun](http://babun.github.io) - A Linux-type shell + [winpty](https://github.com/rprichard/winpty), **Windows only**
 
 For best result and a clean setup it is recommended to remove any previous versions of VirtualBox, Vagrant, boot2docker, docker and docker-compose.
 
@@ -49,6 +49,8 @@ Designate a root folder that the VM will have access to (e.g. `~/Projects`) and 
     bash <(curl -s https://raw.githubusercontent.com/blinkreaction/boot2docker-vagrant/master/scripts/setup.sh)
 
 ### Manual installation
+
+Use these steps if you have VirtualBox and/or Vagrant already installed or prefer/need to install them manually.
 
 1. Copy `Vagrantfile` and `vagrant.yml` into a designated folder
 2. Inside the folder run

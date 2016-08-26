@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.7.0 (2016-08-26)
+
+- IMPORTANT: this release requires VirtualBox v5.1.x and Vagrant v1.8.5+
+- Version updates
+  - blinkreaction/boot2docker base box v1.12.1
+  - docker cli 1.12.1
+  - docker-compose 1.8.0
+  - winpty 0.4.0 (Windows only)
+
 ## 1.6.2 (2016-06-27)
 
 - Hotfix: Fixed broken winpty dependency since 1.6.0 on Windows
