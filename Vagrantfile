@@ -242,9 +242,14 @@ Vagrant.configure("2") do |config|
     end
   end
 
+  # Fix default vagrant share.
+  # TODO: test and remove once Vagrant v1.8.6 is out.
+  config.vm.synced_folder ".", "/vagrant", owner: 1000, group: 50
+
   # Make host home directory available to containers in /.home
+  # TODO: test and remove hardcoded owner and group below once Vagrant v1.8.6 is out.
   if File.directory?(File.expand_path("~"))
-    config.vm.synced_folder "~", "/.home"
+    config.vm.synced_folder "~", "/.home", owner: 1000, group: 50
   end
 
   ######################################################################
