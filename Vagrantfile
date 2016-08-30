@@ -247,11 +247,6 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder "~", "/.home"
   end
 
-  # Make host SSH keys available to containers in /.ssh (legacy, TO BE REMOVED soon)
-  if File.directory?(File.expand_path("~/.ssh"))
-    config.vm.synced_folder "~/.ssh", "/.ssh"
-  end
-
   ######################################################################
 
   ## VirtualBox VM settings.
