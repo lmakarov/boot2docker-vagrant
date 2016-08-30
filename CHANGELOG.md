@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.1 (2016-08-30)
+
+- Hotfix for Vagrant v1.8.5 regression with VirtualBox shared folders on Tiny Core
+
+
 ## 1.7.0 (2016-08-26)
 
 - IMPORTANT: this release requires VirtualBox v5.1.x and Vagrant v1.8.5+
@@ -8,6 +13,7 @@
   - docker cli 1.12.1
   - docker-compose 1.8.0
   - winpty 0.4.0 (Windows only)
+
 
 ## 1.6.2 (2016-06-27)
 
